@@ -15,8 +15,6 @@ All in one site. **Nothing leaves your browser.**
 [![Local-first](https://img.shields.io/badge/100%25-Local--first-5BB8A6)](#privacy)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](#contributing)
 
-<img src="./readme_images/Screenshot%202026-10-16%20234149.png" alt="ARSENAL OSINT — home page" width="100%" />
-
 </div>
 
 ---
@@ -40,7 +38,6 @@ All in one site. **Nothing leaves your browser.**
 - [Privacy](#privacy)
 - [License](#license)
 - [Contributing](#contributing)
-- [Support](#support)
 
 ---
 
@@ -58,28 +55,29 @@ All in one site. **Nothing leaves your browser.**
 
 ## Screenshots
 
-<table>
-  <tr>
-    <td width="50%">
-      <img src="./readme_images/Screenshot%202026-10-16%20234149.png" alt="Home page" width="100%" />
-      <p align="center"><sub><b>Home</b> — the entry point to the arsenal.</sub></p>
-    </td>
-    <td width="50%">
-      <img src="./readme_images/Screenshot%202026-10-16%20234204.png" alt="Playbooks" width="100%" />
-      <p align="center"><sub><b>Playbooks</b> — end-to-end investigation workflows.</sub></p>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">
-      <img src="./readme_images/Screenshot%202026-10-16%20234413.png" alt="Tools catalog" width="100%" />
-      <p align="center"><sub><b>Tools</b> — 750+ tools, filtered by category or method.</sub></p>
-    </td>
-    <td width="50%">
-      <img src="./readme_images/Screenshot%202026-10-16%20234711.png" alt="Mapping tool" width="100%" />
-      <p align="center"><sub><b>Map</b> — pins, basemaps and pin-to-identifier links.</sub></p>
-    </td>
-  </tr>
-</table>
+### 🏠 Home
+
+<img src="./readme_images/Screenshot%202026-10-16%20234149.png" alt="Home page" width="100%" />
+
+The entry point to the arsenal — tools, guides, playbooks and the mapping workspace.
+
+### 📖 Playbooks
+
+<img src="./readme_images/Screenshot%202026-10-16%20234204.png" alt="Playbooks" width="100%" />
+
+End-to-end investigation workflows, step by step.
+
+### 🧰 Tools
+
+<img src="./readme_images/Screenshot%202026-10-16%20234413.png" alt="Tools catalog" width="100%" />
+
+750+ curated tools, filtered by category or install method.
+
+### 🗺️ Mapping tool
+
+<img src="./readme_images/Screenshot%202026-10-16%20234711.png" alt="Mapping tool" width="100%" />
+
+Pins, switchable basemaps, and pin-to-identifier links.
 
 ---
 
@@ -96,21 +94,21 @@ method**, and a workspace to **assemble the picture**.
 
 Everything is client-side. There is no server to trust and no database to leak.
 
-| Section | What it is |
-| --- | --- |
-| **Home** | A quick overview of the site and the methodology behind it. |
-| **Tools** | A searchable catalog of **750+ curated OSINT / security tools**, vendored from [awesome-osint-arsenal](https://github.com/rawfilejson/awesome-osint-arsenal) (MIT) as static JSON. Filter by category or install method, mark favourites, jump straight to a tool. You install things yourself — the catalog tells you how. |
-| **Field Guides** | 11 concise tutorials — the OSINT cycle, SOCMINT, GEOINT, dorking, reverse image search, metadata, email/phone recon, OPSEC and more — organised into **Fundamentals, Disciplines, Techniques and Tradecraft**. |
-| **Playbooks** | End-to-end workflows that chain guides + tools into a repeatable process, each with a shareable URL. |
-| **Glossary & Reference** | A 60-term OSINT vocabulary and a printable quick-reference sheet (dorks, metadata commands, geo helpers, OPSEC checklist). |
-| **Mapping Tool** | The investigation workspace: node graph, map, timeline, analysis and reports. |
+| Section                  | What it is                                                                                                                                                                                                                                                                                                                  |
+| ------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Home**                 | A quick overview of the site and the methodology behind it.                                                                                                                                                                                                                                                                 |
+| **Tools**                | A searchable catalog of **750+ curated OSINT / security tools**, vendored from [awesome-osint-arsenal](https://github.com/rawfilejson/awesome-osint-arsenal) (MIT) as static JSON. Filter by category or install method, mark favourites, jump straight to a tool. You install things yourself — the catalog tells you how. |
+| **Field Guides**         | 11 concise tutorials — the OSINT cycle, SOCMINT, GEOINT, dorking, reverse image search, metadata, email/phone recon, OPSEC and more — organised into **Fundamentals, Disciplines, Techniques and Tradecraft**.                                                                                                              |
+| **Playbooks**            | End-to-end workflows that chain guides + tools into a repeatable process, each with a shareable URL.                                                                                                                                                                                                                        |
+| **Glossary & Reference** | A 60-term OSINT vocabulary and a printable quick-reference sheet (dorks, metadata commands, geo helpers, OPSEC checklist).                                                                                                                                                                                                  |
+| **Mapping Tool**         | The investigation workspace: node graph, map, timeline, analysis and reports.                                                                                                                                                                                                                                               |
 
 ### How does the OSINT Mapping tool work?
 
 **Information tab (link analysis).** Every node is one piece of information — an Instagram
 account, a phone number, a licence plate, a family member. Drag from a node's handle to
-another node to wire them together; drop the wire on empty space and it *spawns a new,
-already-connected node* (Blender-style). Right-click the canvas for the same quick-add.
+another node to wire them together; drop the wire on empty space and it _spawns a new,
+already-connected node_ (Blender-style). Right-click the canvas for the same quick-add.
 Each identifier type has its own form fields, brand icons, and support for custom icons.
 
 **Map tab.** Click anywhere to drop a pin — the geocoder fills in the name and address and
@@ -130,15 +128,15 @@ Everything saves to a single `.osint.json` file.
 
 ## Tech stack
 
-| Layer | Choice |
-| --- | --- |
-| UI | **React 19** |
-| Framework | **Next.js 16** (App Router) |
-| Styling | **Tailwind CSS 3** |
-| Node graph | [`@xyflow/react`](https://reactflow.dev) |
-| Maps | [`@vis.gl/react-google-maps`](https://visgl.github.io/react-google-maps/), [`leaflet`](https://leafletjs.com) + `react-leaflet` |
-| State | React Context (no Redux) |
-| Storage | Local JSON files + `localStorage` |
+| Layer      | Choice                                                                                                                          |
+| ---------- | ------------------------------------------------------------------------------------------------------------------------------- |
+| UI         | **React 19**                                                                                                                    |
+| Framework  | **Next.js 16** (App Router)                                                                                                     |
+| Styling    | **Tailwind CSS 3**                                                                                                              |
+| Node graph | [`@xyflow/react`](https://reactflow.dev)                                                                                        |
+| Maps       | [`@vis.gl/react-google-maps`](https://visgl.github.io/react-google-maps/), [`leaflet`](https://leafletjs.com) + `react-leaflet` |
+| State      | React Context (no Redux)                                                                                                        |
+| Storage    | Local JSON files + `localStorage`                                                                                               |
 
 ---
 
@@ -307,7 +305,7 @@ client JS bundle.
 
 - **No backend, no accounts, no analytics.** Nothing is ever uploaded.
 - In **Google** mode the only outbound calls are the browser's own tile/Places requests, made
-  with *your* key.
+  with _your_ key.
 - In **OpenStreetMap** mode, requests go to `openstreetmap.org` and
   `nominatim.openstreetmap.org`.
 - Settings and custom icons live in `localStorage`; projects are plain files on your disk.
@@ -327,15 +325,6 @@ Pull requests are welcome. The one hard rule: **nothing may ship data off the us
 — no analytics, no remote sync, no third-party tracking.
 
 ---
-
-## Support
-
-If this project is useful to you, you can support it with crypto:
-
-| Network | Address |
-| --- | --- |
-| Ethereum | `0x59bFD011AaAeA85AF644A574a11836673CAcfCD4` |
-| Litecoin | `LYxKNT7TAWZAM96Vz2HRxyUmvZbqEqiofe` |
 
 <div align="center">
 <sub>Built for investigators who like to keep their evidence to themselves.</sub>
