@@ -1,0 +1,85 @@
+.bulk-import-modal {
+  max-width: 560px;
+}
+
+.bulk-import-platform {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.bulk-import-platform label {
+  margin: 0;
+  font-size: 12px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+.bulk-import-platform select {
+  width: auto;
+  flex: 1;
+}
+
+.bulk-import-textarea {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  resize: vertical;
+  margin-bottom: 12px;
+}
+
+.bulk-import-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  font-size: 12px;
+  color: var(--text-1);
+  margin-bottom: 12px;
+}
+
+.bulk-import-total {
+  margin-left: auto;
+  color: var(--text-2);
+}
+
+.bulk-import-muted {
+  color: var(--text-2);
+}
+
+.bulk-import-preview {
+  list-style: none;
+  margin: 0 0 4px;
+  padding: 6px;
+  max-height: 180px;
+  overflow-y: auto;
+  background: var(--bg-2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+.bulk-import-preview li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  font-size: 12.5px;
+}
+
+.bulk-import-badge {
+  flex-shrink: 0;
+  min-width: 78px;
+  font-size: 11px;
+  color: var(--text-2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.bulk-import-value {
+  color: var(--text-0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

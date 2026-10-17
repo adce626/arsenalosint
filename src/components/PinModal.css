@@ -59,7 +59,9 @@
   align-items: center;
   justify-content: center;
   padding: 0;
-  transition: transform 0.08s ease, box-shadow 0.12s ease;
+  transition:
+    transform 0.08s ease,
+    box-shadow 0.12s ease;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
@@ -68,7 +70,9 @@
 }
 
 .color-swatch.selected {
-  box-shadow: 0 0 0 2px var(--bg-1), 0 0 0 4px var(--text-0);
+  box-shadow:
+    0 0 0 2px var(--bg-1),
+    0 0 0 4px var(--text-0);
 }
 
 /* `.color-swatch-custom` + `.color-input-hidden` are styled globally in
@@ -94,7 +98,10 @@
   align-items: center;
   justify-content: center;
   padding: 4px;
-  transition: border-color 0.12s ease, background 0.12s ease, transform 0.05s ease;
+  transition:
+    border-color 0.12s ease,
+    background 0.12s ease,
+    transform 0.05s ease;
 }
 
 .pin-icon-tile:hover {

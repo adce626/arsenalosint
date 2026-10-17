@@ -1,4 +1,4 @@
-import { readConfigFile } from './appConfig.js';
+import { readConfigFile } from './appConfig';
 
 /**
  * Wipes every piece of app state that the browser is holding for this
@@ -20,7 +20,9 @@ import { readConfigFile } from './appConfig.js';
  *   values it cleared against, so a *different* file key provided later
  *   (e.g. Docker regenerating app.config.json from .env) takes effect again.
  */
-export async function clearAllSavedData({ overrideFileGoogleConfig = false } = {}) {
+export async function clearAllSavedData({
+  overrideFileGoogleConfig = false,
+} = {}) {
   const removed = [];
   // Snapshot keys first — iterating localStorage while mutating it is fragile.
   const keys = [];

@@ -1,15 +1,34 @@
 services:
+  # Production: builds the standalone image (multi-stage Dockerfile).
   app:
     build: .
+    image: osint-arsenal:latest
     container_name: osint-mapping-tool
     ports:
-      - "5173:5173"
-    volumes:
-      - .:/app
-      - /app/node_modules
+      - '5173:5173'
+    restart: unless-stopped
     # .env is optional: with no keys the app boots to its first-run screen
     # where OpenStreetMap works with no key at all. required:false lets the
     # container start even when the user hasn't created a .env yet.
+    env_file:
+      - path: .env
+        required: false
+
+  # Development: hot reload against the bind mount. Run with
+  #   docker compose --profile dev up dev
+  dev:
+    profiles: ['dev']
+    image: node:22-alpine
+    container_name: osint-mapping-tool-dev
+    working_dir: /app
+    command: sh /app/docker/entrypoint.sh
+    environment:
+      APP_MODE: dev
+    ports:
+      - '5173:5173'
+    volumes:
+      - .:/app
+      - /app/node_modules
     env_file:
       - path: .env
         required: false

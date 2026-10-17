@@ -7,6 +7,7 @@ import {
 } from '../utils/recentProjects.js';
 import ThemeToggle from './ThemeToggle.jsx';
 import ClearAllDataButton from './ClearAllDataButton.jsx';
+import { DEMO_CASE } from '../content/demoCase.js';
 import './Landing.css';
 
 function relativeTime(iso) {
@@ -23,9 +24,13 @@ function relativeTime(iso) {
   return new Date(iso).toLocaleDateString();
 }
 
-export default function Landing() {
-  const { newProject, openProjectFromFile, openProjectFromSnapshot } =
-    useProject();
+export default function Landing({ onExitToHome }) {
+  const {
+    newProject,
+    openProjectFromFile,
+    openProjectFromSnapshot,
+    openProjectData,
+  } = useProject();
   const [showNew, setShowNew] = useState(false);
   const [name, setName] = useState('');
   const [targetName, setTargetName] = useState('');
@@ -75,33 +80,119 @@ export default function Landing() {
   return (
     <div className="landing">
       <div className="landing-topbar">
+        {onExitToHome && (
+          <button
+            className="btn btn-ghost"
+            style={{ marginRight: 'auto' }}
+            onClick={onExitToHome}
+            title="Back to home"
+            aria-label="Back to home"
+          >
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 12H5M12 19l-7-7 7-7" />
+            </svg>
+            Home
+          </button>
+        )}
         <ThemeToggle />
       </div>
 
       <div className="landing-content">
         <div className="landing-brand">
           <div className="landing-logo">
-            <svg width="42" height="42" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="42"
+              height="42"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="1.6"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <circle cx="11" cy="11" r="7" />
               <path d="m21 21-4.3-4.3" />
             </svg>
           </div>
           <h1 className="landing-title">OSINT Mapping Tool</h1>
           <p className="landing-tagline">
-            Organize identifiers, build connections, and pin locations for any target.
+            Organize identifiers, build connections, and pin locations for any
+            target.
           </p>
         </div>
 
         <div className="landing-actions">
-          <button className="btn btn-primary landing-cta" onClick={() => setShowNew(true)}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          <button
+            className="btn btn-primary landing-cta"
+            onClick={() => setShowNew(true)}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 5v14M5 12h14" />
+            </svg>
             New Project
           </button>
-          <button className="btn btn-secondary landing-cta" onClick={handleOpenClick}>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+          <button
+            className="btn btn-secondary landing-cta"
+            onClick={handleOpenClick}
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+            </svg>
             Open Project
           </button>
+          <button
+            className="btn btn-ghost landing-cta"
+            onClick={() => openProjectData(DEMO_CASE)}
+            title="Open a fictional sample investigation"
+          >
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+            </svg>
+            Load demo case
+          </button>
         </div>
+
+        <p className="landing-demo-hint">
+          New here? The demo case is a fictional investigation that fills every
+          tab — graph, map, timeline, analysis, and network.
+        </p>
 
         {recents.length > 0 && (
           <div className="landing-recents">
@@ -118,7 +209,16 @@ export default function Landing() {
                       title={`Resume ${r.name}`}
                     >
                       <div className="landing-recent-icon">
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <polyline points="1 4 1 10 7 10" />
                           <path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10" />
                         </svg>
@@ -147,7 +247,16 @@ export default function Landing() {
                           }
                         }}
                       >
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <svg
+                          width="12"
+                          height="12"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
                           <path d="M18 6 6 18M6 6l12 12" />
                         </svg>
                       </span>
@@ -187,9 +296,15 @@ export default function Landing() {
 
       {showNew && (
         <div className="modal-backdrop" onClick={() => setShowNew(false)}>
-          <form className="modal" onClick={(e) => e.stopPropagation()} onSubmit={handleCreate}>
+          <form
+            className="modal"
+            onClick={(e) => e.stopPropagation()}
+            onSubmit={handleCreate}
+          >
             <h2>New Project</h2>
-            <p className="modal-sub">Set up a workspace for a new research target.</p>
+            <p className="modal-sub">
+              Set up a workspace for a new research target.
+            </p>
 
             <div className="field">
               <label htmlFor="project-name">Project name</label>
@@ -203,7 +318,12 @@ export default function Landing() {
             </div>
 
             <div className="field">
-              <label htmlFor="target-name">Target name <span style={{ textTransform: 'none', opacity: 0.6 }}>(optional)</span></label>
+              <label htmlFor="target-name">
+                Target name{' '}
+                <span style={{ textTransform: 'none', opacity: 0.6 }}>
+                  (optional)
+                </span>
+              </label>
               <input
                 id="target-name"
                 value={targetName}
@@ -215,7 +335,11 @@ export default function Landing() {
             {error && <div className="landing-error">{error}</div>}
 
             <div className="modal-actions">
-              <button type="button" className="btn btn-ghost" onClick={() => setShowNew(false)}>
+              <button
+                type="button"
+                className="btn btn-ghost"
+                onClick={() => setShowNew(false)}
+              >
                 Cancel
               </button>
               <button type="submit" className="btn btn-primary">

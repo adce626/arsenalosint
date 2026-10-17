@@ -89,16 +89,21 @@ export default function PinInfoWindow({ pin, index, onClose, onEdit }) {
         onClose={onClose}
         onEdit={onEdit}
       >
-        {loading && (
-          <div className="pin-info-loading">Loading place info…</div>
-        )}
+        {loading && <div className="pin-info-loading">Loading place info…</div>}
 
         {placeDetails && (
           <div className="pin-info-section pin-info-google">
             {placeDetails.rating != null && (
               <div className="pin-info-row">
                 <span className="pin-info-rating">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+                  </svg>
                   {placeDetails.rating.toFixed(1)}
                 </span>
                 {placeDetails.user_ratings_total != null && (
@@ -117,9 +122,7 @@ export default function PinInfoWindow({ pin, index, onClose, onEdit }) {
             {isOpenNow !== undefined && (
               <div className="pin-info-row">
                 <span
-                  className={`pin-info-status ${
-                    isOpenNow ? 'open' : 'closed'
-                  }`}
+                  className={`pin-info-status ${isOpenNow ? 'open' : 'closed'}`}
                 >
                   <span className="status-dot" />
                   {isOpenNow ? 'Open now' : 'Closed now'}
@@ -166,18 +169,16 @@ function formatPlaceTypes(types) {
   const filtered = types
     .filter((t) => !['establishment', 'point_of_interest'].includes(t))
     .slice(0, 3)
-    .map((t) =>
-      t
-        .replace(/_/g, ' ')
-        .replace(/\b\w/g, (l) => l.toUpperCase()),
-    );
+    .map((t) => t.replace(/_/g, ' ').replace(/\b\w/g, (l) => l.toUpperCase()));
   return filtered.join(' · ');
 }
 
 function shortenUrl(url) {
   try {
     const u = new URL(url);
-    return u.host.replace(/^www\./, '') + (u.pathname === '/' ? '' : u.pathname);
+    return (
+      u.host.replace(/^www\./, '') + (u.pathname === '/' ? '' : u.pathname)
+    );
   } catch {
     return url;
   }

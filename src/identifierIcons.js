@@ -1,7 +1,9 @@
 /**
- * Built-in icon registry. Vite resolves the imports below to hashed asset URLs
- * at build time, so we can pass them straight to <img src> and they get
- * bundled cleanly.
+ * Built-in icon registry.
+ *
+ * Next.js resolves the imports below to hashed asset URLs at build time and
+ * exposes each one as a `{ src, width, height }` (StaticImageData) object, so
+ * every read must go through `toIconUrl` before hitting an <img src>.
  *
  * Each entry is either:
  *   { name, src }                        — single icon used in any theme
@@ -13,7 +15,11 @@
  *   3. (Optional) Map a type key in TYPE_DEFAULT_ICON so that type starts
  *      using it automatically.
  */
+import customBlack from './images/node_icons/custom-black.svg';
+import customWhite from './images/node_icons/custom-white.svg';
 import discordIcon from './images/node_icons/discord.png';
+import emailBlack from './images/node_icons/email-black.png';
+import emailWhite from './images/node_icons/email-white.png';
 import facebookIcon from './images/node_icons/facebook.png';
 import familyBlack from './images/node_icons/family-black.png';
 import familyWhite from './images/node_icons/family-white.png';
@@ -24,8 +30,13 @@ import instagramIcon from './images/node_icons/instagram.png';
 import licensePlateBlack from './images/node_icons/license-plate-black.png';
 import licensePlateWhite from './images/node_icons/license-plate-white.png';
 import linkedinIcon from './images/node_icons/linkedin.png';
+import locationBlack from './images/node_icons/location-black.png';
+import locationWhite from './images/node_icons/location-white.png';
+import nameBlack from './images/node_icons/name-black.svg';
+import nameWhite from './images/node_icons/name-white.svg';
 import phoneDark from './images/node_icons/phone-dark.png';
 import phoneLight from './images/node_icons/phone-light.png';
+import redditIcon from './images/node_icons/reddit.png';
 import snapchatIcon from './images/node_icons/snapchat.png';
 import spotifyIcon from './images/node_icons/spotify.png';
 import telegramIcon from './images/node_icons/telegram.png';
@@ -49,12 +60,17 @@ export const BUILT_IN_ICONS = {
   tiktok: { name: 'TikTok', src: tiktokIcon },
   linkedin: { name: 'LinkedIn', src: linkedinIcon },
   snapchat: { name: 'Snapchat', src: snapchatIcon },
+  reddit: { name: 'Reddit', src: redditIcon },
   discord: { name: 'Discord', src: discordIcon },
   telegram: { name: 'Telegram', src: telegramIcon },
   google: { name: 'Google', src: googleIcon },
   spotify: { name: 'Spotify', src: spotifyIcon },
   whatsapp: { name: 'WhatsApp', src: whatsappIcon },
   phone: { name: 'Phone', light: phoneDark, dark: phoneLight },
+  email: { name: 'Email', light: emailBlack, dark: emailWhite },
+  address: { name: 'Address', light: locationBlack, dark: locationWhite },
+  name: { name: 'Name', light: nameBlack, dark: nameWhite },
+  custom: { name: 'Custom', light: customBlack, dark: customWhite },
   family: { name: 'Family', light: familyBlack, dark: familyWhite },
   familyPerson: {
     name: 'Family (person)',
@@ -79,14 +95,32 @@ export const TYPE_DEFAULT_ICON = {
   tiktok: 'tiktok',
   linkedin: 'linkedin',
   snapchat: 'snapchat',
+  reddit: 'reddit',
   discord: 'discord',
   telegram: 'telegram',
+  email: 'email',
   phone: 'phone',
+  address: 'address',
+  name: 'name',
+  custom: 'custom',
   family: 'family',
   vehicle: 'vehicle',
   vin: 'vin',
   licensePlate: 'licensePlate',
 };
+
+/**
+ * Normalise an imported image to a URL string. Next.js static image imports
+ * are objects ({ src, width, height }); plain strings are returned as-is.
+ */
+function toIconUrl(value) {
+  if (!value) return null;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object' && typeof value.src === 'string') {
+    return value.src;
+  }
+  return null;
+}
 
 /**
  * Pick the right src for a built-in icon given the current theme.
@@ -95,7 +129,7 @@ export const TYPE_DEFAULT_ICON = {
 export function getBuiltInSrc(iconId, theme = 'dark') {
   const entry = BUILT_IN_ICONS[iconId];
   if (!entry) return null;
-  if (entry.src) return entry.src;
-  if (theme === 'light') return entry.light ?? entry.dark ?? null;
-  return entry.dark ?? entry.light ?? null;
+  if (entry.src) return toIconUrl(entry.src);
+  if (theme === 'light') return toIconUrl(entry.light ?? entry.dark);
+  return toIconUrl(entry.dark ?? entry.light);
 }

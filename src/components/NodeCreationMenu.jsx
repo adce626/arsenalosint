@@ -136,9 +136,7 @@ export default function NodeCreationMenu({ position, onSelect, onClose }) {
                       type="button"
                       className={`node-menu-row ${isActive ? 'active' : ''}`}
                       onClick={() => onSelect(t.key)}
-                      onMouseEnter={() =>
-                        idx != null && setSelectedIndex(idx)
-                      }
+                      onMouseEnter={() => idx != null && setSelectedIndex(idx)}
                     >
                       <IdentifierBadge typeKey={t.key} size="sm" />
                       <span>{t.label}</span>

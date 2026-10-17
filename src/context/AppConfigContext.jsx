@@ -3,7 +3,7 @@ import {
   loadAppConfig,
   writeLocalConfig,
   readConfigFile,
-} from '../utils/appConfig.js';
+} from '../utils/appConfig';
 
 const AppConfigContext = createContext(null);
 
@@ -103,10 +103,8 @@ export function AppConfigProvider({ children }) {
   };
 
   const googleMapsApiKey = state.config?.googleMaps?.apiKey ?? '';
-  const googleMapsMapId =
-    state.config?.googleMaps?.mapId?.trim?.() || null;
-  const mapProvider =
-    state.config?.map?.provider === 'osm' ? 'osm' : 'google';
+  const googleMapsMapId = state.config?.googleMaps?.mapId?.trim?.() || null;
+  const mapProvider = state.config?.map?.provider === 'osm' ? 'osm' : 'google';
 
   return (
     <AppConfigContext.Provider

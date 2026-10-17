@@ -11,14 +11,72 @@ body,
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto,
-    'Helvetica Neue', Arial, sans-serif;
+  font-family:
+    var(--font-work-sans),
+    'Work Sans',
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    sans-serif;
   background: var(--bg-0);
   color: var(--text-0);
   font-size: 14px;
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: var(--accent);
+}
+
+a:hover {
+  color: var(--accent-hover);
+}
+
+::selection {
+  background: var(--accent);
+  color: var(--bg-0);
+}
+
+/* Keyboard focus is always visible and consistent. :where() keeps the
+   specificity at 0 so individual components can still override when needed,
+   and :focus-visible means mouse clicks don't leave a lingering ring. */
+:where(a, button, input, textarea, select, summary, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* Skip link — hidden until focused, lets keyboard users jump past the nav. */
+.skip-link {
+  position: absolute;
+  left: 12px;
+  top: -56px;
+  z-index: 100;
+  padding: 9px 16px;
+  border-radius: 8px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  font-weight: 600;
+  transition: top 0.15s ease;
+}
+
+.skip-link:focus {
+  top: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 button {
@@ -46,7 +104,9 @@ select {
   border-radius: 6px;
   padding: 8px 10px;
   outline: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  transition:
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
   width: 100%;
 }
 
@@ -66,7 +126,9 @@ select:focus {
   border-radius: 8px;
   font-weight: 500;
   border: 1px solid transparent;
-  transition: background 0.15s ease, border-color 0.15s ease,
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease,
     transform 0.05s ease;
 }
 
@@ -177,6 +239,59 @@ select:focus {
   margin-bottom: 14px;
 }
 
+/* Grouped form fields (e.g. the Provenance & confidence block in the pin and
+   identifier modals). */
+.field-group {
+  margin: 4px 0 16px;
+  padding: 12px 14px 2px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.field-group legend {
+  padding: 0 6px;
+  font-family: var(--font-ibm-plex-mono, monospace);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+
+.field-hint {
+  margin: 2px 0 10px;
+  font-size: 12px;
+  line-height: 1.6;
+  color: var(--text-2);
+}
+
+/* Two-axis Admiralty grader (SourceGrading.jsx). */
+.source-grading-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.source-grading-row .field {
+  margin-bottom: 0;
+  flex: 1;
+  min-width: 0;
+}
+
+.source-grading-code {
+  flex-shrink: 0;
+  min-width: 44px;
+  text-align: center;
+  padding: 7px 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg-2);
+  font-family: var(--font-ibm-plex-mono, monospace);
+  font-size: 15px;
+  letter-spacing: 0.04em;
+  color: var(--accent);
+}
+
 /* Custom-color swatch (used by PinModal pin color picker and MapTab
    connector color picker). Rainbow conic gradient by default; the inline
    `background` from React overrides it when a custom color is active.
@@ -208,14 +323,33 @@ select:focus {
   padding: 0;
 }
 
+/* Cheap "virtualization" for long tool grids: the browser skips layout/paint
+   for off-screen cards while preserving scroll height via the intrinsic-size
+   estimate. Far less code than a JS windowing library and works with the CSS
+   grid gap-px layout. */
+.tool-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 260px;
+}
+
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 @keyframes scaleIn {
-  from { opacity: 0; transform: scale(0.97); }
-  to { opacity: 1; transform: scale(1); }
+  from {
+    opacity: 0;
+    transform: scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
 }
 
 /* Themed scrollbar — applied app-wide so modals, sidebars, pickers, and

@@ -114,6 +114,19 @@ export function detectIconFromTypes(types) {
 }
 
 /**
+ * Normalise an imported image to a URL string. Next.js static image imports
+ * are objects ({ src, width, height }); plain strings are returned as-is.
+ */
+function toIconUrl(value) {
+  if (!value) return null;
+  if (typeof value === 'string') return value;
+  if (typeof value === 'object' && typeof value.src === 'string') {
+    return value.src;
+  }
+  return null;
+}
+
+/**
  * Pick the right src for a built-in map icon given the current theme.
  * Falls back if only one variant is defined.
  */
@@ -121,7 +134,7 @@ export function getMapIconSrc(iconId, theme = 'dark') {
   if (!iconId) return null;
   const entry = BUILT_IN_MAP_ICONS[iconId];
   if (!entry) return null;
-  if (entry.src) return entry.src;
-  if (theme === 'light') return entry.light ?? entry.dark ?? null;
-  return entry.dark ?? entry.light ?? null;
+  if (entry.src) return toIconUrl(entry.src);
+  if (theme === 'light') return toIconUrl(entry.light ?? entry.dark);
+  return toIconUrl(entry.dark ?? entry.light);
 }

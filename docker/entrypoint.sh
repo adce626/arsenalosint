@@ -9,6 +9,9 @@
 #     maintain public/app.config.json by hand) and log what happened, so
 #     an empty or missing .env is visible in `docker compose logs` instead
 #     of silently blanking the key.
+#
+# APP_MODE=dev runs the Next.js dev server (hot reload, source mounted);
+# otherwise the prebuilt standalone server is started (production image).
 
 CONFIG=/app/public/app.config.json
 
@@ -29,4 +32,10 @@ else
   echo "[entrypoint] Google Maps mode will ask for a key in the app; OpenStreetMap mode works without one."
 fi
 
-exec npm run dev -- --host 0.0.0.0
+if [ "$APP_MODE" = "dev" ]; then
+  echo "[entrypoint] APP_MODE=dev -> starting Next.js dev server."
+  exec npm run dev -- -H 0.0.0.0
+fi
+
+echo "[entrypoint] Starting production server on port ${PORT:-5173}."
+exec node server.js

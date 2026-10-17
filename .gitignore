@@ -15,7 +15,12 @@ build/
 out/
 *.local
 
-# Vite / bundler caches
+# Next.js build output & generated types
+.next/
+out/
+next-env.d.ts
+
+# Bundler caches
 .vite/
 .cache/
 .parcel-cache/

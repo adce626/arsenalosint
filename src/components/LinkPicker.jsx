@@ -53,10 +53,7 @@ export default function LinkPicker({
 
   return (
     <div className="link-picker-backdrop" onMouseDown={onClose}>
-      <div
-        className="link-picker"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
+      <div className="link-picker" onMouseDown={(e) => e.stopPropagation()}>
         <div className="link-picker-header">
           <h3>{title}</h3>
           <button
@@ -65,7 +62,18 @@ export default function LinkPicker({
             onClick={onClose}
             aria-label="Close"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
@@ -108,7 +116,18 @@ export default function LinkPicker({
                     </div>
                     <div className="link-picker-check">
                       {selected && (
-                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                        <svg
+                          width="14"
+                          height="14"
+                          viewBox="0 0 24 24"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        >
+                          <polyline points="20 6 9 17 4 12" />
+                        </svg>
                       )}
                     </div>
                   </button>
@@ -119,9 +138,7 @@ export default function LinkPicker({
         </div>
 
         <div className="link-picker-footer">
-          <span className="link-picker-count">
-            {selectedIds.size} selected
-          </span>
+          <span className="link-picker-count">{selectedIds.size} selected</span>
           <button type="button" className="btn btn-primary" onClick={onClose}>
             Done
           </button>

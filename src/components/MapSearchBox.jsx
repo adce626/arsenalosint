@@ -27,13 +27,7 @@ export default function MapSearchBox({ onPlaceSelected }) {
     if (!places || !map || !inputRef.current) return;
 
     const ac = new places.Autocomplete(inputRef.current, {
-      fields: [
-        'geometry',
-        'name',
-        'formatted_address',
-        'place_id',
-        'types',
-      ],
+      fields: ['geometry', 'name', 'formatted_address', 'place_id', 'types'],
     });
     autocompleteRef.current = ac;
     // Bias predictions to whatever the user is currently looking at.
@@ -84,7 +78,16 @@ export default function MapSearchBox({ onPlaceSelected }) {
   return (
     <div className="map-searchbox">
       <span className="map-searchbox-icon" aria-hidden="true">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <circle cx="11" cy="11" r="7" />
           <path d="m21 21-4.3-4.3" />
         </svg>
@@ -104,7 +107,16 @@ export default function MapSearchBox({ onPlaceSelected }) {
         title="Clear search"
         aria-label="Clear search"
       >
-        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <path d="M18 6 6 18M6 6l12 12" />
         </svg>
       </button>

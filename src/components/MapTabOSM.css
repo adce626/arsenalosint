@@ -130,7 +130,8 @@
      fixed 280px, so neutralize the margins and let it size itself. */
   margin: 0;
   width: auto !important;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto,
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto,
     'Helvetica Neue', Arial, sans-serif;
   font-size: 14px;
   line-height: 1.45;
@@ -204,4 +205,110 @@
   font-size: 12px;
   color: var(--text-2);
   font-style: italic;
+}
+
+/* --- Map tools toolbar (pin / measure / area / export / batch geocode) ---
+   Positioned absolutely over the canvas; the `.map-canvas .map-tools` scope
+   (specificity 0,2,0) intentionally outranks the generic `.map-canvas > div`
+   sizing rule so the toolbar keeps its own intrinsic size. */
+.map-canvas .map-tools {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  z-index: 6;
+  width: auto;
+  height: auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  background: var(--bg-1);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  box-shadow: var(--shadow-lg);
+}
+
+.map-tools-group {
+  display: inline-flex;
+  gap: 2px;
+}
+
+.map-tools-group button,
+.map-tools-actions button,
+.map-tools-clear {
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  color: var(--text-1);
+  background: transparent;
+  border: 1px solid transparent;
+}
+
+.map-tools-group button.active {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.map-tools-group button:hover:not(.active),
+.map-tools-actions button:hover:not(:disabled),
+.map-tools-clear:hover {
+  background: var(--bg-hover);
+  color: var(--text-0);
+}
+
+.map-tools-readout {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--text-0);
+  padding: 0 4px;
+  white-space: nowrap;
+}
+
+.map-tools-clear {
+  color: var(--text-2);
+}
+
+.map-tools-actions {
+  display: inline-flex;
+  gap: 2px;
+  padding-left: 6px;
+  border-left: 1px solid var(--border);
+}
+
+.map-tools-actions button {
+  border-color: var(--border);
+}
+
+.map-tools-actions button:disabled {
+  opacity: 0.5;
+}
+
+/* Basemap picker inside the map toolbar. */
+.map-basemap-group {
+  align-items: center;
+  gap: 6px;
+  padding-left: 6px;
+  border-left: 1px solid var(--border);
+}
+
+.map-basemap-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-2);
+  white-space: nowrap;
+}
+
+.map-basemap-select {
+  width: auto;
+  padding: 4px 6px;
+  font-size: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-2);
+  color: var(--text-0);
+}
+
+.map-basemap-select:hover {
+  border-color: var(--accent);
 }

@@ -7,6 +7,11 @@ function readInitialTheme() {
   if (typeof window === 'undefined') return 'dark';
   const stored = window.localStorage.getItem(STORAGE_KEY);
   if (stored === 'dark' || stored === 'light') return stored;
+  // No explicit choice yet: follow the operating system so the public site
+  // respects a light desktop instead of forcing dark on everyone.
+  if (window.matchMedia?.('(prefers-color-scheme: light)').matches) {
+    return 'light';
+  }
   return 'dark';
 }
 

@@ -1,4 +1,5 @@
 .id-node {
+  position: relative;
   background: var(--bg-1);
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -9,7 +10,31 @@
   align-items: center;
   gap: 10px;
   box-shadow: var(--shadow-sm);
-  transition: border-color 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+/* Left color bar used for the "group by category / type" node coloring. */
+.id-node-accent {
+  position: absolute;
+  left: 0;
+  top: 10px;
+  bottom: 10px;
+  width: 4px;
+  border-radius: 0 3px 3px 0;
+}
+
+/* Confidence marker (high/medium/low) in the top-right corner. */
+.id-node-confidence {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid var(--bg-1);
+  box-shadow: var(--shadow-sm);
 }
 
 .id-node:hover {
@@ -18,7 +43,9 @@
 
 .id-node.selected {
   border-color: var(--accent);
-  box-shadow: 0 0 0 3px var(--accent-soft), var(--shadow-sm);
+  box-shadow:
+    0 0 0 3px var(--accent-soft),
+    var(--shadow-sm);
 }
 
 .id-node-body {
@@ -79,7 +106,9 @@
   border-radius: 50%;
   opacity: 0.55;
   box-sizing: border-box;
-  transition: transform 0.12s ease, opacity 0.12s ease;
+  transition:
+    transform 0.12s ease,
+    opacity 0.12s ease;
   pointer-events: none;
 }
 

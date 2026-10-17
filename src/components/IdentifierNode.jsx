@@ -5,6 +5,7 @@ import {
   getDisplayLabel,
   getSecondaryLabel,
 } from '../identifierTypes.js';
+import { confidenceColor, confidenceLabel } from '../confidence.js';
 import './IdentifierNode.css';
 
 const SIDES = [
@@ -19,9 +20,18 @@ export default function IdentifierNode({ data, selected }) {
   const def = getTypeDef(identifier.type);
   const display = getDisplayLabel(identifier);
   const secondary = getSecondaryLabel(identifier);
+  const color = data.color;
+  const conf = confidenceColor(identifier.confidence);
 
   return (
     <div className={`id-node ${selected ? 'selected' : ''}`}>
+      {color && (
+        <span
+          className="id-node-accent"
+          style={{ background: color }}
+          aria-hidden="true"
+        />
+      )}
       {SIDES.map(({ position, id }) => (
         <Handle
           key={id}
@@ -41,6 +51,14 @@ export default function IdentifierNode({ data, selected }) {
         <div className="id-node-label">{display}</div>
         {secondary && <div className="id-node-secondary">{secondary}</div>}
       </div>
+      {conf && (
+        <span
+          className="id-node-confidence"
+          style={{ background: conf }}
+          title={`Confidence: ${confidenceLabel(identifier.confidence)}`}
+          aria-label={`Confidence: ${confidenceLabel(identifier.confidence)}`}
+        />
+      )}
     </div>
   );
 }

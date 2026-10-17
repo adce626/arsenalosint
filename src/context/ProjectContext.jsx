@@ -1,10 +1,12 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
-import { createProject } from '../utils/createProject.js';
-import { downloadProject, readProjectFromFile } from '../utils/projectIO.js';
+import { createProject } from '../utils/createProject';
 import {
-  saveRecent,
-  markRecentSaved,
-} from '../utils/recentProjects.js';
+  downloadProject,
+  parseProject,
+  readProjectFromFile,
+} from '../utils/projectIO';
+import { mergeIdentifiersInto } from '../utils/mergeIdentifiers.js';
+import { saveRecent, markRecentSaved } from '../utils/recentProjects.js';
 import { DEFAULT_PIN_COLOR } from '../pinColors.js';
 
 const ProjectContext = createContext(null);
@@ -51,6 +53,17 @@ export function ProjectProvider({ children }) {
     return snapshot;
   };
 
+  // Load a fully-formed project object (e.g. the bundled demo case), running it
+  // through the schema so missing fields get defaults. Snapshotted to recents
+  // immediately so it can be resumed like any other project.
+  const openProjectData = (data) => {
+    if (!data) return null;
+    const parsed = parseProject(data);
+    setProject(parsed);
+    saveRecent(parsed, { lastSavedAt: null });
+    return parsed;
+  };
+
   const closeProject = () => {
     // Flush the latest state synchronously before unmounting so the auto-save
     // debounce can't race the user clicking Back.
@@ -92,6 +105,12 @@ export function ProjectProvider({ children }) {
         notes: identifier.notes ?? '',
         position: identifier.position ?? defaultPosition,
         customIconId: identifier.customIconId ?? null,
+        confidence: identifier.confidence ?? '',
+        source: identifier.source ?? '',
+        accessedAt: identifier.accessedAt ?? '',
+        archivedUrl: identifier.archivedUrl ?? '',
+        reliability: identifier.reliability ?? '',
+        credibility: identifier.credibility ?? '',
         createdAt: now,
         updatedAt: now,
       };
@@ -122,6 +141,12 @@ export function ProjectProvider({ children }) {
           notes: r.notes ?? '',
           position: r.position ?? defaultPosition,
           customIconId: r.customIconId ?? null,
+          confidence: r.confidence ?? '',
+          source: r.source ?? '',
+          accessedAt: r.accessedAt ?? '',
+          archivedUrl: r.archivedUrl ?? '',
+          reliability: r.reliability ?? '',
+          credibility: r.credibility ?? '',
           createdAt: now,
           updatedAt: now,
         });
@@ -142,6 +167,12 @@ export function ProjectProvider({ children }) {
     }));
   };
 
+  // Fold one or more identifiers into a keeper. Connections, pin links, and
+  // event references are remapped onto the keeper.
+  const mergeIdentifiers = (keepId, removeIds) => {
+    updateProject((p) => mergeIdentifiersInto(p, keepId, removeIds));
+  };
+
   const deleteIdentifier = (id) => {
     updateProject((p) => ({
       ...p,
@@ -150,6 +181,17 @@ export function ProjectProvider({ children }) {
         (c) => c.source !== id && c.target !== id,
       ),
       pinLinks: (p.pinLinks ?? []).filter((l) => l.identifierId !== id),
+      events: (p.events ?? []).map((e) =>
+        (e.identifierIds ?? []).includes(id)
+          ? { ...e, identifierIds: e.identifierIds.filter((x) => x !== id) }
+          : e,
+      ),
+      hypotheses: (p.hypotheses ?? []).map((h) => ({
+        ...h,
+        evidence: (h.evidence ?? []).map((e) =>
+          e.identifierId === id ? { ...e, identifierId: null } : e,
+        ),
+      })),
     }));
   };
 
@@ -188,6 +230,152 @@ export function ProjectProvider({ children }) {
     }));
   };
 
+  const updateConnection = (id, patch) => {
+    updateProject((p) => ({
+      ...p,
+      connections: p.connections.map((c) =>
+        c.id === id ? { ...c, ...patch, id: c.id } : c,
+      ),
+    }));
+  };
+
+  // --- Timeline events -------------------------------------------------------
+  const addEvent = (event) => {
+    const now = new Date().toISOString();
+    const record = {
+      id: event.id ?? crypto.randomUUID(),
+      date: event.date ?? '',
+      title: (event.title ?? '').trim(),
+      description: event.description ?? '',
+      source: event.source ?? '',
+      confidence: event.confidence ?? '',
+      reliability: event.reliability ?? '',
+      credibility: event.credibility ?? '',
+      pinId: event.pinId ?? null,
+      identifierIds: event.identifierIds ?? [],
+      createdAt: now,
+      updatedAt: now,
+    };
+    updateProject((p) => ({ ...p, events: [...(p.events ?? []), record] }));
+    return record;
+  };
+
+  const updateEvent = (id, patch) => {
+    updateProject((p) => ({
+      ...p,
+      events: (p.events ?? []).map((e) =>
+        e.id === id
+          ? { ...e, ...patch, id: e.id, updatedAt: new Date().toISOString() }
+          : e,
+      ),
+    }));
+  };
+
+  const deleteEvent = (id) => {
+    updateProject((p) => ({
+      ...p,
+      events: (p.events ?? []).filter((e) => e.id !== id),
+    }));
+  };
+
+  // --- Hypotheses (analysis board) -------------------------------------------
+  const addHypothesis = (hypothesis) => {
+    const now = new Date().toISOString();
+    const record = {
+      id: hypothesis.id ?? crypto.randomUUID(),
+      title: (hypothesis.title ?? '').trim(),
+      description: hypothesis.description ?? '',
+      evidence: [],
+      createdAt: now,
+      updatedAt: now,
+    };
+    updateProject((p) => ({
+      ...p,
+      hypotheses: [...(p.hypotheses ?? []), record],
+    }));
+    return record;
+  };
+
+  const updateHypothesis = (id, patch) => {
+    updateProject((p) => ({
+      ...p,
+      hypotheses: (p.hypotheses ?? []).map((h) =>
+        h.id === id
+          ? { ...h, ...patch, id: h.id, updatedAt: new Date().toISOString() }
+          : h,
+      ),
+    }));
+  };
+
+  const deleteHypothesis = (id) => {
+    updateProject((p) => ({
+      ...p,
+      hypotheses: (p.hypotheses ?? []).filter((h) => h.id !== id),
+    }));
+  };
+
+  const addEvidence = (hypothesisId, evidence) => {
+    const now = new Date().toISOString();
+    const record = {
+      id: evidence.id ?? crypto.randomUUID(),
+      text: (evidence.text ?? '').trim(),
+      direction: evidence.direction === 'refutes' ? 'refutes' : 'supports',
+      strength: evidence.strength ?? 'moderate',
+      identifierId: evidence.identifierId ?? null,
+      source: evidence.source ?? '',
+      reliability: evidence.reliability ?? '',
+      credibility: evidence.credibility ?? '',
+      createdAt: now,
+      updatedAt: now,
+    };
+    updateProject((p) => ({
+      ...p,
+      hypotheses: (p.hypotheses ?? []).map((h) =>
+        h.id === hypothesisId
+          ? { ...h, evidence: [...(h.evidence ?? []), record], updatedAt: now }
+          : h,
+      ),
+    }));
+    return record;
+  };
+
+  const updateEvidence = (hypothesisId, evidenceId, patch) => {
+    updateProject((p) => ({
+      ...p,
+      hypotheses: (p.hypotheses ?? []).map((h) =>
+        h.id === hypothesisId
+          ? {
+              ...h,
+              evidence: (h.evidence ?? []).map((e) =>
+                e.id === evidenceId
+                  ? {
+                      ...e,
+                      ...patch,
+                      id: e.id,
+                      updatedAt: new Date().toISOString(),
+                    }
+                  : e,
+              ),
+            }
+          : h,
+      ),
+    }));
+  };
+
+  const deleteEvidence = (hypothesisId, evidenceId) => {
+    updateProject((p) => ({
+      ...p,
+      hypotheses: (p.hypotheses ?? []).map((h) =>
+        h.id === hypothesisId
+          ? {
+              ...h,
+              evidence: (h.evidence ?? []).filter((e) => e.id !== evidenceId),
+            }
+          : h,
+      ),
+    }));
+  };
+
   const addPin = (pin) => {
     const now = new Date().toISOString();
     const record = {
@@ -202,6 +390,11 @@ export function ProjectProvider({ children }) {
       notes: pin.notes ?? '',
       color: pin.color ?? DEFAULT_PIN_COLOR,
       iconId: pin.iconId ?? null,
+      confidence: pin.confidence ?? '',
+      source: pin.source ?? '',
+      archivedUrl: pin.archivedUrl ?? '',
+      reliability: pin.reliability ?? '',
+      credibility: pin.credibility ?? '',
       createdAt: now,
       updatedAt: now,
     };
@@ -225,6 +418,9 @@ export function ProjectProvider({ children }) {
       ...p,
       locations: p.locations.filter((it) => it.id !== id),
       pinLinks: (p.pinLinks ?? []).filter((l) => l.pinId !== id),
+      events: (p.events ?? []).map((e) =>
+        e.pinId === id ? { ...e, pinId: null } : e,
+      ),
     }));
   };
 
@@ -298,6 +494,7 @@ export function ProjectProvider({ children }) {
         newProject,
         openProjectFromFile,
         openProjectFromSnapshot,
+        openProjectData,
         closeProject,
         saveProject,
         updateProject,
@@ -305,8 +502,19 @@ export function ProjectProvider({ children }) {
         bulkAddIdentifiers,
         updateIdentifier,
         deleteIdentifier,
+        mergeIdentifiers,
         addConnection,
         deleteConnection,
+        updateConnection,
+        addEvent,
+        updateEvent,
+        deleteEvent,
+        addHypothesis,
+        updateHypothesis,
+        deleteHypothesis,
+        addEvidence,
+        updateEvidence,
+        deleteEvidence,
         addPin,
         updatePin,
         deletePin,

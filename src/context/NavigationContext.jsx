@@ -1,10 +1,16 @@
-import { createContext, useCallback, useContext, useRef, useState } from 'react';
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useRef,
+  useState,
+} from 'react';
 
 const NavigationContext = createContext(null);
 
 /**
  * Shared state for cross-tab interactions:
- *   - tab: which of 'info' | 'map' is active
+ *   - tab: which of 'info' | 'map' | 'timeline' | 'analysis' | 'network' is active
  *   - hoveredIdentifierId: when set, MapTab pulses linked markers
  *   - focus: { kind, id, token } — when populated, target tab scrolls to /
  *            highlights the item, then clears via consumeFocus(token).
@@ -54,6 +60,7 @@ export function NavigationProvider({ children }) {
 
 export function useNavigation() {
   const ctx = useContext(NavigationContext);
-  if (!ctx) throw new Error('useNavigation must be used within NavigationProvider');
+  if (!ctx)
+    throw new Error('useNavigation must be used within NavigationProvider');
   return ctx;
 }

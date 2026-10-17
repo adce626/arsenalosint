@@ -19,7 +19,12 @@ import './IconPicker.css';
  *
  * onSelect(id | null) — null means "use the type default".
  */
-export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }) {
+export default function IconPicker({
+  typeKey,
+  currentIconId,
+  onSelect,
+  onClose,
+}) {
   const { icons: customIcons, addIcon, removeIcon } = useCustomIcons();
   const { theme } = useTheme();
   const [error, setError] = useState('');
@@ -91,7 +96,10 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
 
   return (
     <div className="modal-backdrop icon-picker-backdrop" onMouseDown={onClose}>
-      <div className="modal icon-picker" onMouseDown={(e) => e.stopPropagation()}>
+      <div
+        className="modal icon-picker"
+        onMouseDown={(e) => e.stopPropagation()}
+      >
         <div className="modal-header">
           <h2>Choose icon</h2>
           <button
@@ -100,7 +108,18 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
             onClick={onClose}
             aria-label="Close"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
@@ -112,11 +131,7 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
             onClick={() => onSelect(null)}
             title="Use the built-in default for this type"
           >
-            <IdentifierBadge
-              typeKey={typeKey}
-              customIconId={null}
-              size="lg"
-            />
+            <IdentifierBadge typeKey={typeKey} customIconId={null} size="lg" />
             <span className="icon-tile-text">
               {getTypeDef(typeKey).label} default
             </span>
@@ -162,11 +177,7 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
                   onClick={() => onSelect(id)}
                   title={icon.name}
                 >
-                  <img
-                    src={icon.dataUrl}
-                    alt={icon.name}
-                    draggable={false}
-                  />
+                  <img src={icon.dataUrl} alt={icon.name} draggable={false} />
                   <span className="icon-tile-text">
                     {truncateFilename(icon.name)}
                   </span>
@@ -188,7 +199,18 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
                   aria-label={`Remove ${icon.name}`}
                   title="Remove from library"
                 >
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M18 6 6 18M6 6l12 12" />
+                  </svg>
                 </button>
               </div>
             ))}
@@ -198,7 +220,18 @@ export default function IconPicker({ typeKey, currentIconId, onSelect, onClose }
               onClick={handleUploadClick}
               title="Upload a custom icon"
             >
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              <svg
+                width="22"
+                height="22"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
               <span className="icon-tile-text">Upload</span>
             </button>
           </div>

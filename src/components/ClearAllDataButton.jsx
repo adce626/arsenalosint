@@ -47,17 +47,14 @@ export default function ClearAllDataButton({ variant = 'block' }) {
         </button>
         {variant === 'block' && (
           <p className="clear-all-hint">
-            Wipes settings, custom icons, and the Continue-recent list from
-            this browser. Saved project files on disk are untouched.
+            Wipes settings, custom icons, and the Continue-recent list from this
+            browser. Saved project files on disk are untouched.
           </p>
         )}
       </div>
 
       {confirming && (
-        <div
-          className="modal-backdrop"
-          onClick={() => setConfirming(false)}
-        >
+        <div className="modal-backdrop" onClick={() => setConfirming(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2>Clear all saved data?</h2>
             <p className="modal-sub">
@@ -86,8 +83,8 @@ export default function ClearAllDataButton({ variant = 'block' }) {
             </label>
 
             <p className="modal-sub">
-              Project files you've saved to disk (<code>*.osint.json</code>)
-              are not touched.
+              Project files you've saved to disk (<code>*.osint.json</code>) are
+              not touched.
             </p>
             <div className="modal-actions">
               <button

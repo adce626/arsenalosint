@@ -5,16 +5,16 @@ import {
   listTypesByCategory,
 } from '../identifierTypes.js';
 import { useProject } from '../context/ProjectContext.jsx';
+import { CONFIDENCE_LEVELS } from '../confidence.js';
 import { getPinColor } from '../pinColors.js';
 import IdentifierBadge from './IdentifierBadge.jsx';
 import IconPicker from './IconPicker.jsx';
 import LinkPicker from './LinkPicker.jsx';
+import SourceGrading from './SourceGrading.jsx';
 import './IdentifierModal.css';
 
 function buildEmptyFields(typeKey) {
-  return Object.fromEntries(
-    getTypeDef(typeKey).fields.map((f) => [f.key, '']),
-  );
+  return Object.fromEntries(getTypeDef(typeKey).fields.map((f) => [f.key, '']));
 }
 
 function FieldInput({ field, value, onChange, autoFocus }) {
@@ -38,15 +38,19 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
   const pins = project?.locations ?? [];
   const pinLinks = project?.pinLinks ?? [];
 
-  const [stage, setStage] = useState(
-    initial?.type ? 'form' : 'picker',
-  );
+  const [stage, setStage] = useState(initial?.type ? 'form' : 'picker');
   const [search, setSearch] = useState('');
   const [typeKey, setTypeKey] = useState(initial?.type ?? null);
   const [fields, setFields] = useState(
     initial?.fields ?? (initial?.type ? buildEmptyFields(initial.type) : {}),
   );
   const [notes, setNotes] = useState(initial?.notes ?? '');
+  const [confidence, setConfidence] = useState(initial?.confidence ?? '');
+  const [source, setSource] = useState(initial?.source ?? '');
+  const [accessedAt, setAccessedAt] = useState(initial?.accessedAt ?? '');
+  const [archivedUrl, setArchivedUrl] = useState(initial?.archivedUrl ?? '');
+  const [reliability, setReliability] = useState(initial?.reliability ?? '');
+  const [credibility, setCredibility] = useState(initial?.credibility ?? '');
   const [error, setError] = useState('');
   const [pickerOpen, setPickerOpen] = useState(false);
   const [expandedChip, setExpandedChip] = useState(null);
@@ -147,6 +151,12 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
       fields: trimmedFields,
       notes: notes.trim(),
       customIconId,
+      confidence,
+      source: source.trim(),
+      accessedAt,
+      archivedUrl: archivedUrl.trim(),
+      reliability,
+      credibility,
     });
   };
 
@@ -200,10 +210,7 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
               {idx + 1}
             </span>
           ),
-          label:
-            p.label?.trim() ||
-            p.address?.trim() ||
-            `Pin ${idx + 1}`,
+          label: p.label?.trim() || p.address?.trim() || `Pin ${idx + 1}`,
           secondary:
             p.label && p.address
               ? p.address
@@ -238,10 +245,23 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                 onClick={onClose}
                 aria-label="Close"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
               </button>
             </div>
-            <p className="modal-sub">Pick a category and type for this piece of information.</p>
+            <p className="modal-sub">
+              Pick a category and type for this piece of information.
+            </p>
 
             <input
               type="text"
@@ -292,7 +312,18 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                     aria-label="Back to type picker"
                     title="Back"
                   >
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 18 9 12l6-6"/></svg>
+                    <svg
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M15 18 9 12l6-6" />
+                    </svg>
                   </button>
                 )}
                 <button
@@ -308,7 +339,18 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                     size="lg"
                   />
                   <span className="form-title-icon-edit">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 20h9M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4z"/></svg>
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M12 20h9M16.5 3.5a2.121 2.121 0 1 1 3 3L7 19l-4 1 1-4z" />
+                    </svg>
                   </span>
                 </button>
                 <h2>
@@ -321,7 +363,18 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                 onClick={onClose}
                 aria-label="Close"
               >
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                <svg
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M18 6 6 18M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
@@ -351,6 +404,64 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                   placeholder="Anything else worth recording…"
                 />
               </div>
+
+              <fieldset className="field-group">
+                <legend>Provenance &amp; confidence</legend>
+                <div className="field-row">
+                  <div className="field">
+                    <label htmlFor="field-confidence">Confidence</label>
+                    <select
+                      id="field-confidence"
+                      value={confidence}
+                      onChange={(e) => setConfidence(e.target.value)}
+                    >
+                      {CONFIDENCE_LEVELS.map((l) => (
+                        <option key={l.id || 'none'} value={l.id}>
+                          {l.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="field">
+                    <label htmlFor="field-accessed">Accessed</label>
+                    <input
+                      id="field-accessed"
+                      type="date"
+                      value={accessedAt}
+                      onChange={(e) => setAccessedAt(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div className="field">
+                  <label htmlFor="field-source">Source URL</label>
+                  <input
+                    id="field-source"
+                    type="url"
+                    value={source}
+                    onChange={(e) => setSource(e.target.value)}
+                    placeholder="https://where you found this"
+                  />
+                </div>
+                <div className="field">
+                  <label htmlFor="field-archived">Archived copy</label>
+                  <input
+                    id="field-archived"
+                    type="url"
+                    value={archivedUrl}
+                    onChange={(e) => setArchivedUrl(e.target.value)}
+                    placeholder="https://web.archive.org/…"
+                  />
+                </div>
+              </fieldset>
+
+              <SourceGrading
+                reliability={reliability}
+                credibility={credibility}
+                onChange={(patch) => {
+                  if ('reliability' in patch) setReliability(patch.reliability);
+                  if ('credibility' in patch) setCredibility(patch.credibility);
+                }}
+              />
 
               {editing && (
                 <div className="field">
@@ -395,7 +506,9 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                             <span className="link-chip-textblock">
                               <span className="link-chip-text">{label}</span>
                               {context && !isExpanded && (
-                                <span className="link-chip-context">{context}</span>
+                                <span className="link-chip-context">
+                                  {context}
+                                </span>
                               )}
                             </span>
                           </button>
@@ -406,7 +519,18 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                             aria-label="Remove link"
                             title="Remove link"
                           >
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                            <svg
+                              width="10"
+                              height="10"
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              stroke="currentColor"
+                              strokeWidth="3"
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                            >
+                              <path d="M18 6 6 18M6 6l12 12" />
+                            </svg>
                           </button>
                           {isExpanded && (
                             <input
@@ -437,7 +561,18 @@ export default function IdentifierModal({ initial, onClose, onSubmit }) {
                       className="link-chip-add"
                       onClick={() => setPickerOpen(true)}
                     >
-                      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                      <svg
+                        width="11"
+                        height="11"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
+                        <path d="M12 5v14M5 12h14" />
+                      </svg>
                       Link location
                     </button>
                   </div>

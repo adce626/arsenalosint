@@ -16,9 +16,13 @@ const SIZE_PRESETS = {
 
 function pickTextColor(bgHex) {
   const hex = bgHex.replace('#', '');
-  const full = hex.length === 3
-    ? hex.split('').map((c) => c + c).join('')
-    : hex;
+  const full =
+    hex.length === 3
+      ? hex
+          .split('')
+          .map((c) => c + c)
+          .join('')
+      : hex;
   const r = parseInt(full.slice(0, 2), 16);
   const g = parseInt(full.slice(2, 4), 16);
   const b = parseInt(full.slice(4, 6), 16);
@@ -26,7 +30,11 @@ function pickTextColor(bgHex) {
   return brightness > 165 ? '#1d1d1f' : '#ffffff';
 }
 
-export default function IdentifierBadge({ typeKey, customIconId, size = 'md' }) {
+export default function IdentifierBadge({
+  typeKey,
+  customIconId,
+  size = 'md',
+}) {
   const { icons: customIcons } = useCustomIcons();
   const { theme } = useTheme();
   const dim = SIZE_PRESETS[size] ?? SIZE_PRESETS.md;

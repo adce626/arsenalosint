@@ -55,7 +55,9 @@
   font-weight: 500;
   font-size: 13px;
   color: var(--text-1);
-  transition: background 0.15s ease, color 0.15s ease;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
 }
 
 .tab-button:hover:not(.active) {
@@ -73,6 +75,29 @@
   align-items: center;
   justify-content: flex-end;
   gap: 8px;
+}
+
+.history-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding-right: 4px;
+  margin-right: 4px;
+  border-right: 1px solid var(--border);
+}
+
+.export-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding-right: 4px;
+  margin-right: 4px;
+  border-right: 1px solid var(--border);
+}
+
+.topbar-right .icon-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
 }
 
 .project-main {

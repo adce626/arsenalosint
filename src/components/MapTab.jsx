@@ -22,6 +22,12 @@ import MapSearchBox from './MapSearchBox.jsx';
 import PinModal from './PinModal.jsx';
 import PinInfoWindow from './PinInfoWindow.jsx';
 import MapTabOSM from './MapTabOSM.jsx';
+import {
+  BASEMAPS,
+  getBasemap,
+  readBasemapId,
+  writeBasemapId,
+} from '../mapBasemaps.js';
 import './MapTab.css';
 
 const DOUBLE_CLICK_MS = 300;
@@ -83,14 +89,8 @@ function MapTabInner() {
   };
   const connectorColorInputRef = useRef(null);
   const mapId = googleMapsMapId || FALLBACK_MAP_ID;
-  const pins = useMemo(
-    () => project?.locations ?? [],
-    [project?.locations],
-  );
-  const pinLinks = useMemo(
-    () => project?.pinLinks ?? [],
-    [project?.pinLinks],
-  );
+  const pins = useMemo(() => project?.locations ?? [], [project?.locations]);
+  const pinLinks = useMemo(() => project?.pinLinks ?? [], [project?.pinLinks]);
 
   // Pin IDs linked to the currently-hovered identifier (for pulse highlight).
   const highlightedPinIds = useMemo(() => {
@@ -107,6 +107,12 @@ function MapTabInner() {
   const [showSettings, setShowSettings] = useState(false);
   const pendingPanRef = useRef(null);
   const lastMarkerClickRef = useRef({ id: null, time: 0 });
+  const [basemapId, setBasemapId] = useState(() => readBasemapId());
+  const basemap = useMemo(() => getBasemap(basemapId), [basemapId]);
+  const changeBasemap = (id) => {
+    setBasemapId(id);
+    writeBasemapId(id);
+  };
 
   // React to navigation focus requests targeted at a pin.
   useEffect(() => {
@@ -207,11 +213,39 @@ function MapTabInner() {
             title="Map settings"
             aria-label="Map settings"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
             </svg>
           </button>
+        </div>
+
+        <div className="map-basemap-row">
+          <label className="map-basemap-label" htmlFor="google-basemap">
+            Basemap
+          </label>
+          <select
+            id="google-basemap"
+            className="map-basemap-select"
+            value={basemapId}
+            onChange={(e) => changeBasemap(e.target.value)}
+            title="Switch the base map style"
+          >
+            {BASEMAPS.map((b) => (
+              <option key={b.id} value={b.id}>
+                {b.label}
+              </option>
+            ))}
+          </select>
         </div>
 
         <div className="map-display-controls">
@@ -316,62 +350,75 @@ function MapTabInner() {
               const iconVariantTheme = c.glyph === '#ffffff' ? 'dark' : 'light';
               const iconSrc = getMapIconSrc(pin.iconId, iconVariantTheme);
               return (
-              <li
-                key={pin.id}
-                className={`pin-item ${highlightedPinIds.has(pin.id) ? 'highlighted' : ''}`}
-                onClick={() => openEdit(pin)}
-              >
-                {iconSrc ? (
-                  <div
-                    className="pin-index pin-index-icon"
-                    style={{
-                      background: c.bg,
-                      borderColor: c.border,
-                    }}
-                  >
-                    <img src={iconSrc} alt="" draggable={false} />
-                    <span
-                      className="pin-index-num"
-                      style={{ background: c.glyph, color: c.bg, borderColor: c.bg }}
+                <li
+                  key={pin.id}
+                  className={`pin-item ${highlightedPinIds.has(pin.id) ? 'highlighted' : ''}`}
+                  onClick={() => openEdit(pin)}
+                >
+                  {iconSrc ? (
+                    <div
+                      className="pin-index pin-index-icon"
+                      style={{
+                        background: c.bg,
+                        borderColor: c.border,
+                      }}
+                    >
+                      <img src={iconSrc} alt="" draggable={false} />
+                      <span
+                        className="pin-index-num"
+                        style={{
+                          background: c.glyph,
+                          color: c.bg,
+                          borderColor: c.bg,
+                        }}
+                      >
+                        {idx + 1}
+                      </span>
+                    </div>
+                  ) : (
+                    <div
+                      className="pin-index"
+                      style={{
+                        background: c.bg,
+                        color: c.glyph,
+                        borderColor: c.border,
+                      }}
                     >
                       {idx + 1}
-                    </span>
+                    </div>
+                  )}
+                  <div className="pin-body">
+                    <div className="pin-label">{pinDisplayLabel(pin)}</div>
+                    <div className="pin-secondary">
+                      {pinSecondaryLabel(pin)}
+                    </div>
                   </div>
-                ) : (
-                  <div
-                    className="pin-index"
-                    style={{
-                      background: c.bg,
-                      color: c.glyph,
-                      borderColor: c.border,
+                  <button
+                    type="button"
+                    className="pin-delete"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      if (confirm(`Delete "${pinDisplayLabel(pin)}"?`)) {
+                        deletePin(pin.id);
+                      }
                     }}
+                    aria-label="Delete pin"
+                    title="Delete pin"
                   >
-                    {idx + 1}
-                  </div>
-                )}
-                <div className="pin-body">
-                  <div className="pin-label">{pinDisplayLabel(pin)}</div>
-                  <div className="pin-secondary">
-                    {pinSecondaryLabel(pin)}
-                  </div>
-                </div>
-                <button
-                  type="button"
-                  className="pin-delete"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (confirm(`Delete "${pinDisplayLabel(pin)}"?`)) {
-                      deletePin(pin.id);
-                    }
-                  }}
-                  aria-label="Delete pin"
-                  title="Delete pin"
-                >
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
-                  </svg>
-                </button>
-              </li>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                    </svg>
+                  </button>
+                </li>
               );
             })}
           </ul>
@@ -388,6 +435,7 @@ function MapTabInner() {
           clickableIcons={true}
           onClick={onMapClick}
           colorScheme={theme === 'dark' ? 'DARK' : 'LIGHT'}
+          mapTypeId={basemap.googleMapTypeId}
         >
           {pins.map((pin, idx) => {
             const c = getPinColor(pin.color);
@@ -418,7 +466,11 @@ function MapTabInner() {
                       <img src={iconSrc} alt="" draggable={false} />
                       <span
                         className="custom-marker-num"
-                        style={{ background: c.glyph, color: c.bg, borderColor: c.bg }}
+                        style={{
+                          background: c.glyph,
+                          color: c.bg,
+                          borderColor: c.bg,
+                        }}
                       >
                         {idx + 1}
                       </span>
@@ -489,8 +541,7 @@ function MapTabInner() {
               // Match an icon to the place's Google types (if any). Only set
               // if the user hasn't already chosen one explicitly.
               const detectedIcon = detectIconFromTypes(info.types);
-              const nextIconId =
-                editingPin.iconId ?? detectedIcon ?? null;
+              const nextIconId = editingPin.iconId ?? detectedIcon ?? null;
               setEditingPin((cur) =>
                 cur
                   ? {
@@ -710,7 +761,18 @@ function MapsKeySetupSettings({ onClose }) {
           onClick={onClose}
           aria-label="Close"
         >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          <svg
+            width="18"
+            height="18"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M18 6 6 18M6 6l12 12" />
+          </svg>
         </button>
       </div>
 
@@ -742,8 +804,8 @@ function MapsKeySetupSettings({ onClose }) {
         </div>
         <p className="settings-hint">
           Google Maps gives richer place details but needs an API key.
-          OpenStreetMap is free and key-free, but place auto-fill and the
-          info popup are simpler.
+          OpenStreetMap is free and key-free, but place auto-fill and the info
+          popup are simpler.
         </p>
       </div>
 
@@ -787,9 +849,7 @@ function MapsKeySetupSettings({ onClose }) {
           <span className="settings-label">
             Map ID <span className="settings-optional">(optional)</span>
           </span>
-          <code className="settings-value">
-            {googleMapsMapId ?? '—'}
-          </code>
+          <code className="settings-value">{googleMapsMapId ?? '—'}</code>
         </div>
         <div className="settings-row">
           <span className="settings-label">Source</span>

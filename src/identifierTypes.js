@@ -38,7 +38,13 @@ export const IDENTIFIER_TYPES = {
     glyph: 'IG',
     color: '#E1306C',
     fields: [
-      { key: 'username', label: 'Username', type: 'text', primary: true, placeholder: '@username' },
+      {
+        key: 'username',
+        label: 'Username',
+        type: 'text',
+        primary: true,
+        placeholder: '@username',
+      },
       { key: 'profileUrl', label: 'Profile URL', type: 'url' },
       { key: 'displayName', label: 'Display name', type: 'text' },
       { key: 'email', label: 'Linked email', type: 'email' },
@@ -55,7 +61,12 @@ export const IDENTIFIER_TYPES = {
     glyph: 'FB',
     color: '#1877F2',
     fields: [
-      { key: 'username', label: 'Username or handle', type: 'text', primary: true },
+      {
+        key: 'username',
+        label: 'Username or handle',
+        type: 'text',
+        primary: true,
+      },
       { key: 'profileUrl', label: 'Profile URL', type: 'url' },
       { key: 'displayName', label: 'Display name', type: 'text' },
       { key: 'email', label: 'Linked email', type: 'email' },
@@ -69,7 +80,13 @@ export const IDENTIFIER_TYPES = {
     glyph: 'X',
     color: '#1d1d1f',
     fields: [
-      { key: 'username', label: 'Username', type: 'text', primary: true, placeholder: '@handle' },
+      {
+        key: 'username',
+        label: 'Username',
+        type: 'text',
+        primary: true,
+        placeholder: '@handle',
+      },
       { key: 'profileUrl', label: 'Profile URL', type: 'url' },
       { key: 'displayName', label: 'Display name', type: 'text' },
       ...socialNumericFields,
@@ -82,7 +99,12 @@ export const IDENTIFIER_TYPES = {
     glyph: 'YT',
     color: '#FF0000',
     fields: [
-      { key: 'channelName', label: 'Channel name', type: 'text', primary: true },
+      {
+        key: 'channelName',
+        label: 'Channel name',
+        type: 'text',
+        primary: true,
+      },
       { key: 'channelUrl', label: 'Channel URL', type: 'url' },
       { key: 'handle', label: 'Handle', type: 'text', placeholder: '@handle' },
       { key: 'subscribers', label: 'Subscribers', type: 'number' },
@@ -96,7 +118,13 @@ export const IDENTIFIER_TYPES = {
     glyph: 'TT',
     color: '#000000',
     fields: [
-      { key: 'username', label: 'Username', type: 'text', primary: true, placeholder: '@username' },
+      {
+        key: 'username',
+        label: 'Username',
+        type: 'text',
+        primary: true,
+        placeholder: '@username',
+      },
       { key: 'profileUrl', label: 'Profile URL', type: 'url' },
       { key: 'displayName', label: 'Display name', type: 'text' },
       ...socialNumericFields,
@@ -136,10 +164,21 @@ export const IDENTIFIER_TYPES = {
     glyph: 'RD',
     color: '#FF4500',
     fields: [
-      { key: 'username', label: 'Username', type: 'text', primary: true, placeholder: 'u/username' },
+      {
+        key: 'username',
+        label: 'Username',
+        type: 'text',
+        primary: true,
+        placeholder: 'u/username',
+      },
       { key: 'profileUrl', label: 'Profile URL', type: 'url' },
       { key: 'karma', label: 'Karma', type: 'number' },
-      { key: 'accountAge', label: 'Account age', type: 'text', placeholder: 'e.g. 4 yrs' },
+      {
+        key: 'accountAge',
+        label: 'Account age',
+        type: 'text',
+        placeholder: 'e.g. 4 yrs',
+      },
     ],
   },
   discord: {
@@ -159,7 +198,13 @@ export const IDENTIFIER_TYPES = {
     glyph: 'TG',
     color: '#2AABEE',
     fields: [
-      { key: 'username', label: 'Username', type: 'text', primary: true, placeholder: '@username' },
+      {
+        key: 'username',
+        label: 'Username',
+        type: 'text',
+        primary: true,
+        placeholder: '@username',
+      },
       { key: 'phone', label: 'Linked phone', type: 'tel' },
       { key: 'displayName', label: 'Display name', type: 'text' },
     ],
@@ -171,9 +216,25 @@ export const IDENTIFIER_TYPES = {
     glyph: '@',
     color: '#7C4DFF',
     fields: [
-      { key: 'address', label: 'Email address', type: 'email', primary: true, placeholder: 'name@example.com' },
-      { key: 'provider', label: 'Provider', type: 'text', placeholder: 'Gmail, Outlook, ProtonMail…' },
-      { key: 'context', label: 'Context', type: 'text', placeholder: 'Work, personal, throwaway…' },
+      {
+        key: 'address',
+        label: 'Email address',
+        type: 'email',
+        primary: true,
+        placeholder: 'name@example.com',
+      },
+      {
+        key: 'provider',
+        label: 'Provider',
+        type: 'text',
+        placeholder: 'Gmail, Outlook, ProtonMail…',
+      },
+      {
+        key: 'context',
+        label: 'Context',
+        type: 'text',
+        placeholder: 'Work, personal, throwaway…',
+      },
     ],
   },
   phone: {
@@ -182,9 +243,20 @@ export const IDENTIFIER_TYPES = {
     glyph: '☎',
     color: '#0EA5A0',
     fields: [
-      { key: 'number', label: 'Phone number', type: 'tel', primary: true, placeholder: '+1 555 555 5555' },
+      {
+        key: 'number',
+        label: 'Phone number',
+        type: 'tel',
+        primary: true,
+        placeholder: '+1 555 555 5555',
+      },
       { key: 'carrier', label: 'Carrier', type: 'text' },
-      { key: 'lineType', label: 'Line type', type: 'text', placeholder: 'Mobile, landline, VoIP…' },
+      {
+        key: 'lineType',
+        label: 'Line type',
+        type: 'text',
+        placeholder: 'Mobile, landline, VoIP…',
+      },
       { key: 'country', label: 'Country', type: 'text' },
     ],
   },
@@ -213,7 +285,12 @@ export const IDENTIFIER_TYPES = {
       { key: 'region', label: 'State / Region', type: 'text' },
       { key: 'postal', label: 'Postal code', type: 'text' },
       { key: 'country', label: 'Country', type: 'text' },
-      { key: 'context', label: 'Context', type: 'text', placeholder: 'Home, work, previous…' },
+      {
+        key: 'context',
+        label: 'Context',
+        type: 'text',
+        placeholder: 'Home, work, previous…',
+      },
     ],
   },
   family: {
@@ -223,7 +300,12 @@ export const IDENTIFIER_TYPES = {
     color: '#F59E0B',
     fields: [
       { key: 'name', label: 'Name', type: 'text', primary: true },
-      { key: 'relation', label: 'Relation', type: 'text', placeholder: 'Spouse, parent, sibling…' },
+      {
+        key: 'relation',
+        label: 'Relation',
+        type: 'text',
+        placeholder: 'Spouse, parent, sibling…',
+      },
       { key: 'dob', label: 'Date of birth', type: 'date' },
       { key: 'contact', label: 'Contact', type: 'text' },
     ],
@@ -235,7 +317,13 @@ export const IDENTIFIER_TYPES = {
     glyph: 'CR',
     color: '#EF4444',
     fields: [
-      { key: 'description', label: 'Description', type: 'text', primary: true, placeholder: '2018 Honda Civic, silver' },
+      {
+        key: 'description',
+        label: 'Description',
+        type: 'text',
+        primary: true,
+        placeholder: '2018 Honda Civic, silver',
+      },
       { key: 'make', label: 'Make', type: 'text' },
       { key: 'model', label: 'Model', type: 'text' },
       { key: 'year', label: 'Year', type: 'number' },
@@ -249,7 +337,13 @@ export const IDENTIFIER_TYPES = {
     glyph: 'VN',
     color: '#DC2626',
     fields: [
-      { key: 'vin', label: 'VIN', type: 'text', primary: true, placeholder: '17 characters' },
+      {
+        key: 'vin',
+        label: 'VIN',
+        type: 'text',
+        primary: true,
+        placeholder: '17 characters',
+      },
       { key: 'vehicleDescription', label: 'Vehicle description', type: 'text' },
     ],
   },
@@ -272,7 +366,13 @@ export const IDENTIFIER_TYPES = {
     glyph: '*',
     color: '#6B7280',
     fields: [
-      { key: 'title', label: 'Title', type: 'text', primary: true, placeholder: 'What is this identifier?' },
+      {
+        key: 'title',
+        label: 'Title',
+        type: 'text',
+        primary: true,
+        placeholder: 'What is this identifier?',
+      },
       { key: 'value', label: 'Value', type: 'text' },
       { key: 'url', label: 'URL', type: 'url' },
     ],
@@ -349,6 +449,7 @@ export function resolveIconSrc(
     if (customIcons[customIconId]) return customIcons[customIconId].dataUrl;
   }
   const fallback = TYPE_DEFAULT_ICON[typeKey];
-  if (fallback && BUILT_IN_ICONS[fallback]) return getBuiltInSrc(fallback, theme);
+  if (fallback && BUILT_IN_ICONS[fallback])
+    return getBuiltInSrc(fallback, theme);
   return null;
 }

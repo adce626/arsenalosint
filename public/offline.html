@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#0a0b0e" />
+    <title>Offline · Arsenal OSINT</title>
+    <style>
+      :root {
+        --bg-0: #0a0b0e;
+        --bg-1: #0f1114;
+        --border: #22252b;
+        --text-0: #ede8df;
+        --text-1: #b9b5ac;
+        --text-2: #6e7076;
+        --accent: #c9a56b;
+      }
+      :root[data-theme='light'] {
+        --bg-0: #f7f4ee;
+        --bg-1: #ffffff;
+        --border: #ded7c9;
+        --text-0: #1a1712;
+        --text-1: #4a443a;
+        --text-2: #6e7076;
+        --accent: #a6834a;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 32px;
+        background: var(--bg-0);
+        color: var(--text-0);
+        font:
+          15px/1.6 -apple-system,
+          'Segoe UI',
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+      }
+      .card {
+        max-width: 440px;
+        text-align: center;
+        padding: 40px 32px;
+        background: var(--bg-1);
+        border: 1px solid var(--border);
+        border-radius: 16px;
+      }
+      .mark {
+        margin: 0 auto 20px;
+        width: 56px;
+        height: 56px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 20px;
+        letter-spacing: 0.02em;
+      }
+      p {
+        margin: 0 0 24px;
+        color: var(--text-1);
+        font-size: 14px;
+      }
+      .hint {
+        color: var(--text-2);
+        font-size: 12px;
+        margin-bottom: 24px;
+      }
+      button {
+        font: inherit;
+        font-weight: 600;
+        cursor: pointer;
+        padding: 11px 22px;
+        border: none;
+        border-radius: 9px;
+        background: var(--accent);
+        color: #0a0b0e;
+      }
+      button:hover {
+        opacity: 0.9;
+      }
+      .tagline {
+        margin-top: 28px;
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+        font-size: 10px;
+        letter-spacing: 0.2em;
+        color: var(--text-2);
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle
+          cx="11"
+          cy="11"
+          r="7"
+          stroke="var(--accent)"
+          stroke-width="1.5"
+        />
+        <path
+          d="M21 21l-4.3-4.3"
+          stroke="var(--accent)"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+        <circle cx="11" cy="11" r="2.4" fill="var(--accent)" />
+      </svg>
+      <h1>You're offline</h1>
+      <p>
+        The page you requested isn't available without a connection. Your saved
+        projects and field notes stay on this device and are safe.
+      </p>
+      <p class="hint">Reconnect to load fresh pages and remote map tiles.</p>
+      <button type="button" onclick="location.reload()">Retry</button>
+      <div class="tagline">RECON · INTEL · ARCHIVE</div>
+    </main>
+    <script>
+      try {
+        var t = localStorage.getItem('osint-tool:theme');
+        if (t === 'light' || t === 'dark') {
+          document.documentElement.setAttribute('data-theme', t);
+        }
+      } catch (e) {}
+    </script>
+  </body>
+</html>

@@ -40,7 +40,9 @@ export function CustomIconsProvider({ children }) {
   }, []);
 
   return (
-    <CustomIconsContext.Provider value={{ icons, addIcon, removeIcon, renameIcon }}>
+    <CustomIconsContext.Provider
+      value={{ icons, addIcon, removeIcon, renameIcon }}
+    >
       {children}
     </CustomIconsContext.Provider>
   );

@@ -4,6 +4,8 @@ import {
   TileLayer,
   Marker,
   Polyline,
+  Polygon,
+  CircleMarker,
   Popup,
   useMap,
   useMapEvents,
@@ -16,9 +18,24 @@ import { useTheme } from '../context/ThemeContext.jsx';
 import { useNavigation } from '../context/NavigationContext.jsx';
 import { getPinColor, PIN_COLORS } from '../pinColors.js';
 import { getMapIconSrc } from '../mapIcons.js';
+import {
+  BASEMAPS,
+  getBasemap,
+  readBasemapId,
+  writeBasemapId,
+} from '../mapBasemaps.js';
+import {
+  pathLengthMeters,
+  ringAreaSquareMeters,
+  formatDistance,
+  formatArea,
+} from '../utils/geo.js';
+import { exportMapPng } from '../utils/exportMapPng.js';
 import PinModal from './PinModal.jsx';
 import PinInfoCard from './PinInfoCard.jsx';
 import ClearAllDataButton from './ClearAllDataButton.jsx';
+import BatchGeocodeModal from './BatchGeocodeModal.jsx';
+import GeoDataModal from './GeoDataModal.jsx';
 import './MapTab.css';
 import './MapTabOSM.css';
 
@@ -61,11 +78,21 @@ export default function MapTabOSM({ visible = true }) {
   const { mapProvider, setMapProvider } = useAppConfig();
   const { hoveredIdentifierId } = useNavigation();
   const [showSettings, setShowSettings] = useState(false);
+  const [tool, setTool] = useState('pin'); // 'pin' | 'measure' | 'area'
+  const [measurePoints, setMeasurePoints] = useState([]);
+  const [showBatch, setShowBatch] = useState(false);
+  const [showGeoData, setShowGeoData] = useState(false);
+  const [exporting, setExporting] = useState(false);
+  const [basemapId, setBasemapId] = useState(() => readBasemapId());
+  const basemap = useMemo(() => getBasemap(basemapId), [basemapId]);
+
+  const changeBasemap = (id) => {
+    setBasemapId(id);
+    writeBasemapId(id);
+  };
+  const mapRef = useRef(null);
   const pins = useMemo(() => project?.locations ?? [], [project?.locations]);
-  const pinLinks = useMemo(
-    () => project?.pinLinks ?? [],
-    [project?.pinLinks],
-  );
+  const pinLinks = useMemo(() => project?.pinLinks ?? [], [project?.pinLinks]);
   const mapDisplay = project?.mapDisplay ?? {
     showPinConnections: false,
     pinConnectionColor: '#ef4444',
@@ -165,6 +192,47 @@ export default function MapTabOSM({ visible = true }) {
     setEditingPin(null);
   };
 
+  const changeTool = (next) => {
+    setTool(next);
+    setMeasurePoints([]);
+  };
+
+  const addMeasurePoint = useCallback((pt) => {
+    setMeasurePoints((prev) => [...prev, pt]);
+  }, []);
+
+  const measureSummary = useMemo(() => {
+    if (tool === 'measure' && measurePoints.length >= 2) {
+      return `Distance: ${formatDistance(pathLengthMeters(measurePoints))}`;
+    }
+    if (tool === 'area' && measurePoints.length >= 3) {
+      return `Area: ${formatArea(ringAreaSquareMeters(measurePoints))}`;
+    }
+    return '';
+  }, [tool, measurePoints]);
+
+  const handleExport = async () => {
+    const map = mapRef.current;
+    if (!map) return;
+    setExporting(true);
+    try {
+      await exportMapPng({
+        map,
+        container: map.getContainer(),
+        pins,
+        connectionLine:
+          mapDisplay.showPinConnections && pins.length >= 2
+            ? { color: mapDisplay.pinConnectionColor }
+            : null,
+        filename: `${(project?.name || 'map').trim().replace(/[^\w.-]+/g, '-') || 'map'}.png`,
+      });
+    } catch (err) {
+      alert(err?.message || 'Map export failed.');
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="map-tab">
       <aside className="map-sidebar">
@@ -176,7 +244,16 @@ export default function MapTabOSM({ visible = true }) {
             title="Map settings"
             aria-label="Map settings"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <circle cx="12" cy="12" r="3" />
               <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
             </svg>
@@ -193,7 +270,17 @@ export default function MapTabOSM({ visible = true }) {
               })
             }
           >
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" strokeDasharray="3 3">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeDasharray="3 3"
+            >
               <line x1="3" y1="20" x2="21" y2="4" />
             </svg>
             Connect pins
@@ -225,14 +312,15 @@ export default function MapTabOSM({ visible = true }) {
         {pins.length === 0 ? (
           <div className="empty-state">
             <p>No pinned locations yet.</p>
-            <p className="empty-hint">Click anywhere on the map to drop a pin.</p>
+            <p className="empty-hint">
+              Click anywhere on the map to drop a pin.
+            </p>
           </div>
         ) : (
           <ul className="pin-list">
             {pins.map((pin, idx) => {
               const c = getPinColor(pin.color);
-              const iconVariantTheme =
-                c.glyph === '#ffffff' ? 'dark' : 'light';
+              const iconVariantTheme = c.glyph === '#ffffff' ? 'dark' : 'light';
               const iconSrc = getMapIconSrc(pin.iconId, iconVariantTheme);
               return (
                 <li
@@ -290,8 +378,17 @@ export default function MapTabOSM({ visible = true }) {
                     aria-label="Delete pin"
                     title="Delete pin"
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                    <svg
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
                     </svg>
                   </button>
                 </li>
@@ -310,13 +407,65 @@ export default function MapTabOSM({ visible = true }) {
           worldCopyJump
           className="osm-map-container"
         >
+          {/* Keyed by basemap id so switching fully swaps the tile layer. */}
           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+            key={basemap.id}
+            attribution={basemap.attribution}
+            url={basemap.url}
+            maxZoom={basemap.maxZoom}
+            // CORS so the canvas used by "Export PNG" stays untainted.
+            crossOrigin="anonymous"
           />
-          <ClickToPin onClick={handleMapClick} disabled={!!editingPin} />
+          {basemap.overlay && (
+            <TileLayer
+              key={`${basemap.id}-labels`}
+              attribution={basemap.overlay.attribution}
+              url={basemap.overlay.url}
+              maxZoom={basemap.maxZoom}
+              crossOrigin="anonymous"
+            />
+          )}
+          <ClickToPin
+            onClick={handleMapClick}
+            onMeasurePoint={addMeasurePoint}
+            tool={tool}
+            disabled={!!editingPin}
+          />
           <PanController pendingPanRef={pendingPanRef} />
           <InvalidateOnVisible visible={visible} />
+          <MapApi mapRef={mapRef} />
+          <ToolBehavior tool={tool} />
+
+          {tool === 'measure' && measurePoints.length >= 1 && (
+            <Polyline
+              positions={measurePoints.map((p) => [p.lat, p.lng])}
+              pathOptions={{ color: '#c9a56b', weight: 3, dashArray: '6 6' }}
+            />
+          )}
+          {tool === 'area' && measurePoints.length >= 3 && (
+            <Polygon
+              positions={measurePoints.map((p) => [p.lat, p.lng])}
+              pathOptions={{
+                color: '#c9a56b',
+                weight: 2,
+                fillColor: '#c9a56b',
+                fillOpacity: 0.18,
+              }}
+            />
+          )}
+          {(tool === 'measure' || tool === 'area') &&
+            measurePoints.map((p, i) => (
+              <CircleMarker
+                key={`measure-${i}`}
+                center={[p.lat, p.lng]}
+                radius={4}
+                pathOptions={{
+                  color: '#c9a56b',
+                  fillColor: '#c9a56b',
+                  fillOpacity: 1,
+                }}
+              />
+            ))}
           {pins.map((pin, idx) => (
             <PinMarker
               key={pin.id}
@@ -385,6 +534,92 @@ export default function MapTabOSM({ visible = true }) {
           />
         </MapContainer>
 
+        <div className="map-tools" role="toolbar" aria-label="Map tools">
+          <div className="map-tools-group">
+            <button
+              type="button"
+              className={tool === 'pin' ? 'active' : ''}
+              onClick={() => changeTool('pin')}
+              aria-pressed={tool === 'pin'}
+            >
+              Pin
+            </button>
+            <button
+              type="button"
+              className={tool === 'measure' ? 'active' : ''}
+              onClick={() => changeTool('measure')}
+              aria-pressed={tool === 'measure'}
+            >
+              Measure
+            </button>
+            <button
+              type="button"
+              className={tool === 'area' ? 'active' : ''}
+              onClick={() => changeTool('area')}
+              aria-pressed={tool === 'area'}
+            >
+              Area
+            </button>
+          </div>
+
+          <div className="map-tools-group map-basemap-group">
+            <label className="map-basemap-label" htmlFor="osm-basemap">
+              Basemap
+            </label>
+            <select
+              id="osm-basemap"
+              className="map-basemap-select"
+              value={basemapId}
+              onChange={(e) => changeBasemap(e.target.value)}
+              title="Switch the base map style"
+            >
+              {BASEMAPS.map((b) => (
+                <option key={b.id} value={b.id}>
+                  {b.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {measureSummary && (
+            <span className="map-tools-readout">{measureSummary}</span>
+          )}
+          {tool !== 'pin' && measurePoints.length > 0 && (
+            <button
+              type="button"
+              className="map-tools-clear"
+              onClick={() => setMeasurePoints([])}
+            >
+              Clear
+            </button>
+          )}
+
+          <div className="map-tools-actions">
+            <button
+              type="button"
+              onClick={() => setShowBatch(true)}
+              title="Geocode a list of addresses into pins"
+            >
+              Batch geocode
+            </button>
+            <button
+              type="button"
+              onClick={() => setShowGeoData(true)}
+              title="Import or export locations (GeoJSON, KML, CSV)"
+            >
+              Data
+            </button>
+            <button
+              type="button"
+              onClick={handleExport}
+              disabled={exporting}
+              title="Export the current view as a PNG"
+            >
+              {exporting ? 'Exporting…' : 'Export PNG'}
+            </button>
+          </div>
+        </div>
+
         {editingPin && (
           <PinModal
             pin={editingPin}
@@ -393,6 +628,15 @@ export default function MapTabOSM({ visible = true }) {
             onDelete={handleDelete}
           />
         )}
+
+        {showBatch && (
+          <BatchGeocodeModal
+            onClose={() => setShowBatch(false)}
+            onAdd={(pin) => addPin(pin)}
+          />
+        )}
+
+        {showGeoData && <GeoDataModal onClose={() => setShowGeoData(false)} />}
 
         {showSettings && (
           <div
@@ -412,7 +656,18 @@ export default function MapTabOSM({ visible = true }) {
                     onClick={() => setShowSettings(false)}
                     aria-label="Close"
                   >
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    <svg
+                      width="18"
+                      height="18"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
                   </button>
                 </div>
 
@@ -422,8 +677,8 @@ export default function MapTabOSM({ visible = true }) {
                     <span className="settings-value">OpenStreetMap</span>
                   </div>
                   <p className="settings-hint">
-                    Using OpenStreetMap tiles and Nominatim search — no API
-                    key required. Tile rendering and geocoding still need an
+                    Using OpenStreetMap tiles and Nominatim search — no API key
+                    required. Tile rendering and geocoding still need an
                     internet connection.
                   </p>
                   <button
@@ -452,13 +707,41 @@ export default function MapTabOSM({ visible = true }) {
 
 // --- Helpers ----------------------------------------------------------------
 
-function ClickToPin({ onClick, disabled }) {
+function ClickToPin({ onClick, onMeasurePoint, tool = 'pin', disabled }) {
   useMapEvents({
     click(e) {
       if (disabled) return;
-      onClick({ lat: e.latlng.lat, lng: e.latlng.lng });
+      const pt = { lat: e.latlng.lat, lng: e.latlng.lng };
+      if (tool === 'measure' || tool === 'area') {
+        onMeasurePoint?.(pt);
+        return;
+      }
+      onClick(pt);
     },
   });
+  return null;
+}
+
+/** Expose the Leaflet map instance to the parent (for PNG export). */
+function MapApi({ mapRef }) {
+  const map = useMap();
+  useEffect(() => {
+    mapRef.current = map;
+  }, [map, mapRef]);
+  return null;
+}
+
+/**
+ * Suppress double-click zoom while measuring/drawing so a rapid second click
+ * adds a point instead of zooming the map.
+ */
+function ToolBehavior({ tool }) {
+  const map = useMap();
+  useEffect(() => {
+    if (tool === 'pin') map.doubleClickZoom.enable();
+    else map.doubleClickZoom.disable();
+    return () => map.doubleClickZoom.enable();
+  }, [map, tool]);
   return null;
 }
 
@@ -562,7 +845,10 @@ function NominatimSearch({ onSelect }) {
       try {
         const res = await fetch(
           `https://nominatim.openstreetmap.org/search?format=jsonv2&q=${encodeURIComponent(query)}&limit=6`,
-          { signal: controller.signal, headers: { Accept: 'application/json' } },
+          {
+            signal: controller.signal,
+            headers: { Accept: 'application/json' },
+          },
         );
         if (!res.ok) return;
         const data = await res.json();
@@ -615,7 +901,16 @@ function NominatimSearch({ onSelect }) {
       onClick={(e) => e.stopPropagation()}
     >
       <span className="map-searchbox-icon">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        <svg
+          width="14"
+          height="14"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
           <circle cx="11" cy="11" r="7" />
           <path d="m21 21-4.3-4.3" />
         </svg>
@@ -637,7 +932,16 @@ function NominatimSearch({ onSelect }) {
           onClick={() => setQuery('')}
           title="Clear"
         >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="12"
+            height="12"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M18 6 6 18M6 6l12 12" />
           </svg>
         </button>
@@ -671,4 +975,3 @@ function NominatimSearch({ onSelect }) {
     </div>
   );
 }
-

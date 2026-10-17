@@ -1,6 +1,9 @@
 node_modules
+.next
 dist
+coverage
 .git
+.github
 .vscode
 .idea
 npm-debug.log

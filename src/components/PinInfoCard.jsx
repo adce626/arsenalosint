@@ -36,10 +36,7 @@ export default function PinInfoCard({
   // Safety net: if the card unmounts while a chip is hovered (e.g. the user
   // closes via the × or clicks elsewhere), the chip's mouseleave never
   // fires. Clear hovered state on unmount so pins don't stay pulsing.
-  useEffect(
-    () => () => setHoveredIdentifierId(null),
-    [setHoveredIdentifierId],
-  );
+  useEffect(() => () => setHoveredIdentifierId(null), [setHoveredIdentifierId]);
 
   const linkedEntries = useMemo(() => {
     if (!pin) return [];
@@ -58,8 +55,11 @@ export default function PinInfoCard({
   if (!pin) return null;
 
   const color = getPinColor(pin.color);
-  const hasCustomDetails =
-    !!(pin.visitedAt?.trim?.() || pin.withWho?.trim?.() || pin.notes?.trim?.());
+  const hasCustomDetails = !!(
+    pin.visitedAt?.trim?.() ||
+    pin.withWho?.trim?.() ||
+    pin.notes?.trim?.()
+  );
 
   return (
     <div className="pin-info-window">
@@ -159,7 +159,18 @@ export default function PinInfoCard({
           className="btn btn-secondary btn-sm pin-info-external"
         >
           {externalLabel}
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M7 17 17 7M7 7h10v10"/></svg>
+          <svg
+            width="11"
+            height="11"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.4"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M7 17 17 7M7 7h10v10" />
+          </svg>
         </a>
       </div>
     </div>

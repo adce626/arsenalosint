@@ -7,6 +7,7 @@ import {
 } from '../pinColors.js';
 import { BUILT_IN_MAP_ICONS, getMapIconSrc } from '../mapIcons.js';
 import { useProject } from '../context/ProjectContext.jsx';
+import { CONFIDENCE_LEVELS } from '../confidence.js';
 import { useTheme } from '../context/ThemeContext.jsx';
 import {
   CATEGORIES,
@@ -15,6 +16,7 @@ import {
 } from '../identifierTypes.js';
 import IdentifierBadge from './IdentifierBadge.jsx';
 import LinkPicker from './LinkPicker.jsx';
+import SourceGrading from './SourceGrading.jsx';
 import './PinModal.css';
 
 const EMPTY = {
@@ -25,6 +27,11 @@ const EMPTY = {
   notes: '',
   color: DEFAULT_PIN_COLOR,
   iconId: null,
+  confidence: '',
+  source: '',
+  archivedUrl: '',
+  reliability: '',
+  credibility: '',
 };
 
 export default function PinModal({ pin, onClose, onSave, onDelete }) {
@@ -91,6 +98,11 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
       notes: draft.notes.trim(),
       color: draft.color ?? DEFAULT_PIN_COLOR,
       iconId: draft.iconId ?? null,
+      confidence: draft.confidence ?? '',
+      source: (draft.source ?? '').trim(),
+      archivedUrl: (draft.archivedUrl ?? '').trim(),
+      reliability: draft.reliability ?? '',
+      credibility: draft.credibility ?? '',
     });
   };
 
@@ -159,12 +171,32 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
             onClick={onClose}
             aria-label="Close"
           >
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            <svg
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
           </button>
         </div>
 
         <div className="pin-coords">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
@@ -187,7 +219,16 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
                   title={c.name}
                 >
                   {isSelected && (
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={c.glyph} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                    <svg
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke={c.glyph}
+                      strokeWidth="3.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
                       <polyline points="20 6 9 17 4 12" />
                     </svg>
                   )}
@@ -204,7 +245,10 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
                     className={`color-swatch color-swatch-custom ${isCustom ? 'selected' : ''}`}
                     style={
                       isCustom
-                        ? { background: resolved.bg, borderColor: resolved.border }
+                        ? {
+                            background: resolved.bg,
+                            borderColor: resolved.border,
+                          }
                         : undefined
                     }
                     onClick={() => pinColorInputRef.current?.click()}
@@ -212,7 +256,16 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
                     title="Custom color"
                   >
                     {isCustom && (
-                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke={resolved.glyph} strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round">
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke={resolved.glyph}
+                        strokeWidth="3.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      >
                         <polyline points="20 6 9 17 4 12" />
                       </svg>
                     )}
@@ -325,6 +378,55 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
           />
         </div>
 
+        <fieldset className="field-group">
+          <legend>Provenance &amp; confidence</legend>
+          <div className="field">
+            <label htmlFor="pin-confidence">Confidence</label>
+            <select
+              id="pin-confidence"
+              value={draft.confidence ?? ''}
+              onChange={(e) => change('confidence', e.target.value)}
+            >
+              {CONFIDENCE_LEVELS.map((l) => (
+                <option key={l.id || 'none'} value={l.id}>
+                  {l.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="field">
+            <label htmlFor="pin-source">Source URL</label>
+            <input
+              id="pin-source"
+              type="url"
+              value={draft.source ?? ''}
+              onChange={(e) => change('source', e.target.value)}
+              placeholder="https://where you found this"
+            />
+          </div>
+          <div className="field">
+            <label htmlFor="pin-archived">Archived copy</label>
+            <input
+              id="pin-archived"
+              type="url"
+              value={draft.archivedUrl ?? ''}
+              onChange={(e) => change('archivedUrl', e.target.value)}
+              placeholder="https://web.archive.org/…"
+            />
+          </div>
+        </fieldset>
+
+        <SourceGrading
+          reliability={draft.reliability}
+          credibility={draft.credibility}
+          onChange={(patch) => {
+            if ('reliability' in patch)
+              change('reliability', patch.reliability);
+            if ('credibility' in patch)
+              change('credibility', patch.credibility);
+          }}
+        />
+
         <div className="field">
           <label>Linked identifiers</label>
           <div className="link-chips">
@@ -339,13 +441,9 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
                   <button
                     type="button"
                     className="link-chip-body"
-                    onClick={() =>
-                      setExpandedChip(isExpanded ? null : i.id)
-                    }
+                    onClick={() => setExpandedChip(isExpanded ? null : i.id)}
                     title={
-                      context
-                        ? `Context: ${context}`
-                        : 'Click to add context'
+                      context ? `Context: ${context}` : 'Click to add context'
                     }
                   >
                     <IdentifierBadge
@@ -369,7 +467,18 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
                     aria-label="Remove link"
                     title="Remove link"
                   >
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+                    <svg
+                      width="10"
+                      height="10"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <path d="M18 6 6 18M6 6l12 12" />
+                    </svg>
                   </button>
                   {isExpanded && (
                     <input
@@ -398,7 +507,18 @@ export default function PinModal({ pin, onClose, onSave, onDelete }) {
               className="link-chip-add"
               onClick={() => setPickerOpen(true)}
             >
-              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+              <svg
+                width="11"
+                height="11"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M12 5v14M5 12h14" />
+              </svg>
               Link identifier
             </button>
           </div>

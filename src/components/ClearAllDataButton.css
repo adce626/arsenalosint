@@ -56,9 +56,15 @@
   color: color-mix(in srgb, var(--danger, #e5484d) 75%, var(--text-2));
   cursor: pointer;
   text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, var(--danger, #e5484d) 30%, transparent);
+  text-decoration-color: color-mix(
+    in srgb,
+    var(--danger, #e5484d) 30%,
+    transparent
+  );
   text-underline-offset: 3px;
-  transition: color 0.12s ease, text-decoration-color 0.12s ease;
+  transition:
+    color 0.12s ease,
+    text-decoration-color 0.12s ease;
 }
 
 .clear-all-link:hover {

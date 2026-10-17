@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useAppConfig } from '../context/AppConfigContext.jsx';
-import { APP_CONFIG_PATH_HINT } from '../utils/appConfig.js';
+import { APP_CONFIG_PATH_HINT } from '../utils/appConfig';
 import './MapsKeySetup.css';
 
 export default function MapsKeySetup({ compact = false, onSaved }) {
@@ -31,7 +31,16 @@ export default function MapsKeySetup({ compact = false, onSaved }) {
     <div className={`maps-setup ${compact ? 'compact' : ''}`}>
       <div className="maps-setup-card">
         <div className="maps-setup-icon">
-          <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="32"
+            height="32"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="1.6"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 1 1 18 0z" />
             <circle cx="12" cy="10" r="3" />
           </svg>
@@ -61,7 +70,9 @@ export default function MapsKeySetup({ compact = false, onSaved }) {
           </div>
         </form>
 
-        <div className="maps-setup-divider"><span>or</span></div>
+        <div className="maps-setup-divider">
+          <span>or</span>
+        </div>
 
         {/* Escape hatch for users who don't want to deal with Google Cloud
             at all — one click switches the provider to OpenStreetMap. */}
@@ -70,7 +81,16 @@ export default function MapsKeySetup({ compact = false, onSaved }) {
           className="btn btn-secondary maps-setup-osm"
           onClick={handleUseOSM}
         >
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
             <circle cx="12" cy="12" r="10" />
             <path d="M2 12h20M12 2a15.3 15.3 0 0 1 0 20M12 2a15.3 15.3 0 0 0 0 20" />
           </svg>
@@ -79,7 +99,8 @@ export default function MapsKeySetup({ compact = false, onSaved }) {
 
         <div className="maps-setup-alt">
           <p>
-            Prefer editing a file? Copy <code>public/app.config.example.json</code> to{' '}
+            Prefer editing a file? Copy{' '}
+            <code>public/app.config.example.json</code> to{' '}
             <code>{APP_CONFIG_PATH_HINT}</code> and paste your key under{' '}
             <code>googleMaps.apiKey</code>. The app reads it on next load.
           </p>
@@ -94,13 +115,27 @@ export default function MapsKeySetup({ compact = false, onSaved }) {
         <details className="maps-setup-help">
           <summary>How do I get an API key?</summary>
           <ol>
-            <li>Open the <strong>Google Cloud Console</strong> and create or select a project.</li>
-            <li>Enable the <strong>Maps JavaScript API</strong> (and <strong>Places API</strong> if you want auto-fill for known places).</li>
-            <li>Under <strong>APIs &amp; Services → Credentials</strong>, create an API key.</li>
-            <li>For safety, restrict the key to <code>http://localhost</code> and any other origins you use.</li>
+            <li>
+              Open the <strong>Google Cloud Console</strong> and create or
+              select a project.
+            </li>
+            <li>
+              Enable the <strong>Maps JavaScript API</strong> (and{' '}
+              <strong>Places API</strong> if you want auto-fill for known
+              places).
+            </li>
+            <li>
+              Under <strong>APIs &amp; Services → Credentials</strong>, create
+              an API key.
+            </li>
+            <li>
+              For safety, restrict the key to <code>http://localhost</code> and
+              any other origins you use.
+            </li>
           </ol>
           <p className="maps-setup-warning">
-            Usage is billed by Google under your account's free tier and pricing. Restrict your key.
+            Usage is billed by Google under your account's free tier and
+            pricing. Restrict your key.
           </p>
         </details>
       </div>

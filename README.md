@@ -1,11 +1,14 @@
 <div align="center">
 
-# OSINT Mapping Tool
+# Arsenal OSINT
 
-A small web app for organizing OSINT research. Jot down identifiers (social handles, phones, vehicles, whatever), pin places on a map (Google or OpenStreetMap), and wire the two together. Nothing leaves your browser.
+A complete, local-first OSINT workspace: a searchable catalog of 750+ curated tools, hands-on field guides, and a node-graph + map tool for organizing a case — all in one site. Nothing leaves your browser.
 
-[![React](https://img.shields.io/badge/React-18-61dafb?logo=react&logoColor=black)](https://react.dev)
-[![Vite](https://img.shields.io/badge/Vite-6-646cff?logo=vite&logoColor=white)](https://vitejs.dev)
+The **OSINT Mapping Tool** (identifier graph + pin map) is one section of the site, reachable from the header's _Mapping Tool_ tab.
+
+[![React](https://img.shields.io/badge/React-19-61dafb?logo=react&logoColor=black)](https://react.dev)
+[![Next.js](https://img.shields.io/badge/Next.js-16-000000?logo=nextdotjs&logoColor=white)](https://nextjs.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38bdf8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
 [![License: GPL-3.0](https://img.shields.io/badge/license-%20%20GNU%20GPLv3%20-green)](LICENSE)
 [![Local-first](https://img.shields.io/badge/Local--first-✓-success)](#privacy)
 
@@ -14,6 +17,16 @@ A small web app for organizing OSINT research. Jot down identifiers (social hand
 ---
 
 ## Introduction
+
+### What's in the site?
+
+The site has four sections, all client-side:
+
+- **Home** — an overview of the toolset and its disciplines.
+- **Tools** — a searchable catalog of 750+ curated OSINT/security tools, vendored from [`awesome-osint-arsenal`](https://github.com/rawfilejson/awesome-osint-arsenal) (MIT) as static JSON. Filter by category or install method; every entry links to its original project. You install things yourself.
+- **Field Guides** — 11 concise tutorials (the OSINT cycle, SOCMINT, GEOINT, dorking, reverse image search, metadata, email/phone recon, OPSEC, and more) organised into Fundamentals, Disciplines, Techniques, and Tradecraft.
+- **Mapping Tool** — the graph + map workspace described below.
+
 ### How does the OSINT Mapping tool work?
 
 The **Information tab** is a node graph. Each node is one piece of information: an Instagram account, a phone number, a license plate, a family member. Drag a handle to another node to wire them up. Drop the wire on empty space to spawn a new node already connected (Blender style); right-click does the same thing without dragging. Each type has its own form fields and a brand icon, and you can upload your own icons too.
@@ -33,13 +46,14 @@ Everything saves out to a single `.osint.json` file you can stash anywhere, shar
 
 <div align="center">
 
-|Component |Tool |
-|:---|:---|
-| UI | React 18, Vite |
-| Node graph | [`@xyflow/react`](https://reactflow.dev) |
-| Maps | [`@vis.gl/react-google-maps`](https://visgl.github.io/react-google-maps/), [`leaflet`](https://leafletjs.com) + [`react-leaflet`](https://react-leaflet.js.org) |
-| State | React Context (no Redux / no store libs) |
-| Storage | Local JSON files (projects) + `localStorage` (settings, custom icons) |
+| Component  | Tool                                                                                                                                                            |
+| :--------- | :-------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| UI         | React 19, Next.js 16 (App Router)                                                                                                                               |
+| Styling    | Tailwind CSS 3                                                                                                                                                  |
+| Node graph | [`@xyflow/react`](https://reactflow.dev)                                                                                                                        |
+| Maps       | [`@vis.gl/react-google-maps`](https://visgl.github.io/react-google-maps/), [`leaflet`](https://leafletjs.com) + [`react-leaflet`](https://react-leaflet.js.org) |
+| State      | React Context (no Redux / no store libs)                                                                                                                        |
+| Storage    | Local JSON files (projects) + `localStorage` (settings, custom icons)                                                                                           |
 
 </div>
 
@@ -58,11 +72,11 @@ npm run dev
 
 Then open <http://localhost:5173>.
 
-To build a production bundle:
+To build and serve a production bundle:
 
 ```bash
-npm run build       # writes to ./dist
-npm run preview     # serves ./dist on port 4173
+npm run build       # Next.js production build
+npm run start       # serves the build on port 5173
 ```
 
 <br>
@@ -166,15 +180,18 @@ docker compose down
 Twenty built-in identifier types across Social, Contact, Personal, Vehicle, and Other, each with its own typed fields (Instagram: username, followers, posts, bio; Vehicle: make, model, year, color, owner; etc.).
 
 Connections:
+
 - Drag a handle from one node to another to wire them up.
 - Drag to empty space to get a quick-add popup (this also auto-creates the wire to the new node).
 - Right-click the canvas for the same popup without the wire.
 
 Icons:
+
 - Brand icons for common platforms (Instagram, Facebook, X/Twitter, YouTube, TikTok, LinkedIn, Snapchat, Discord, Telegram, Google, Spotify, WhatsApp).
 - Upload your own. They get stored per-browser, so they're available across all projects on the same install.
 
 Editing shortcuts (suppressed when you're typing in a field or a modal is open):
+
 - `Ctrl/Cmd + Z` undo, `Ctrl/Cmd + Shift + Z` or `Ctrl/Cmd + Y` redo. Up to 20 actions, kept in memory.
 - `Ctrl/Cmd + C / V` to copy/paste selected nodes.
 - `Ctrl/Cmd + D` to duplicate.
@@ -200,23 +217,42 @@ Pins can be linked to one or more identifiers, each link with a short note ("che
 
 ```
 src/
-  components/                 UI components (tabs, modals, pickers)
+  app/                        Next.js App Router
+    layout.jsx                root layout, metadata, fonts, theme bootstrap
+    providers.jsx             client boundary + provider stack + SW registration
+    not-found.jsx             404 page
+    globals.css               Tailwind entry
+    (site)/                   marketing + docs routes (share SiteHeader/Footer)
+      layout.jsx              site chrome (header/footer)
+      page.jsx                Home            → /
+      tools/page.jsx          Tools catalog   → /tools   (server-rendered data)
+      guides/page.jsx         Field guides    → /guides
+      guides/[lessonId]/      One lesson      → /guides/what-is-osint …
+    mapping/page.jsx          Mapping tool    → /mapping (own full-screen shell)
+  components/
+    site/                     main-site UI (SiteHeader, ToolsCatalog, LessonIndex, …)
+    ui/                       Tailwind/shadcn-style primitives (button, card, badge, input)
+    …                         mapping-tool UI (tabs, modals, pickers)
+  content/
+    tools/                    catalog.js (server-only data) + meta.js + filter.js (client-safe)
+    basics/                   field-guide lessons + registry
   context/                    ProjectContext, NodeHistoryContext, NavigationContext, …
-  images/
-    icons/                    place-type pin icons (light + dark)
-    node_icons/               brand icons for identifiers
+  lib/utils.js                cn() class-merge helper
+  images/                     pin icons + identifier brand icons
   styles/                     global + theme CSS
   utils/                      projectIO, customIcons, appConfig, recentProjects
-  identifierTypes.js          identifier type registry + resolvers
-  identifierIcons.js          identifier brand-icon registry
-  mapIcons.js                 place-type icon registry + Google-types mapping
-  pinColors.js                pin color palette
-  App.jsx                     landing ↔ project view gate
-  main.jsx                    provider stack + root render
+  identifierTypes.js / identifierIcons.js / mapIcons.js / pinColors.js
+  site.config.js              site name, tagline, nav
 public/
   app.config.example.json     template for your API key (committed)
   app.config.json             your real key (gitignored)
+  manifest.webmanifest        PWA manifest
+  sw.js                       offline shell service worker
 ```
+
+The tools catalog (`catalog.js`) imports the ~400 KB JSON and is **server-only**:
+the browser receives only the normalized fields it renders, so the catalog no
+longer ships in the JavaScript bundle.
 
 ## Privacy
 

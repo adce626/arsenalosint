@@ -183,6 +183,18 @@ function buildBatchDeleteEdgesAction(connections) {
   };
 }
 
+// --- Merge action -----------------------------------------------------------
+
+// A merge rewrites several collections at once (identifiers, connections,
+// pinLinks, events). Rather than diffing, store the affected slices before and
+// after — apply/revert simply swap them back in.
+function buildMergeAction(before, after) {
+  return {
+    apply: (p) => ({ ...p, ...after }),
+    revert: (p) => ({ ...p, ...before }),
+  };
+}
+
 // --- Compound action --------------------------------------------------------
 
 // Combine N actions into a single history entry — useful for flows that
@@ -191,8 +203,7 @@ function buildBatchDeleteEdgesAction(connections) {
 function buildCompoundAction(actions) {
   return {
     apply: (p) => actions.reduce((acc, a) => a.apply(acc), p),
-    revert: (p) =>
-      [...actions].reverse().reduce((acc, a) => a.revert(acc), p),
+    revert: (p) => [...actions].reverse().reduce((acc, a) => a.revert(acc), p),
   };
 }
 
@@ -258,15 +269,35 @@ export function NodeHistoryProvider({ children }) {
     [pushAction],
   );
 
+  // Record many node moves as a SINGLE undo entry — used by auto-layout so one
+  // Ctrl+Z restores the whole arrangement instead of unwinding node-by-node.
+  const recordBatchMoves = useCallback(
+    (moves) => {
+      const valid = (moves ?? []).filter(
+        (m) => m.from && m.to && (m.from.x !== m.to.x || m.from.y !== m.to.y),
+      );
+      if (valid.length === 0) return;
+      if (valid.length === 1) {
+        return pushAction(
+          buildMoveAction(valid[0].id, valid[0].from, valid[0].to),
+        );
+      }
+      pushAction(
+        buildCompoundAction(
+          valid.map((m) => buildMoveAction(m.id, m.from, m.to)),
+        ),
+      );
+    },
+    [pushAction],
+  );
+
   const recordCreateEdge = useCallback(
-    (connection) =>
-      connection && pushAction(buildCreateEdgeAction(connection)),
+    (connection) => connection && pushAction(buildCreateEdgeAction(connection)),
     [pushAction],
   );
 
   const recordDeleteEdge = useCallback(
-    (connection) =>
-      connection && pushAction(buildDeleteEdgeAction(connection)),
+    (connection) => connection && pushAction(buildDeleteEdgeAction(connection)),
     [pushAction],
   );
 
@@ -295,6 +326,16 @@ export function NodeHistoryProvider({ children }) {
           buildCreateEdgeAction(connection),
         ]),
       );
+    },
+    [pushAction],
+  );
+
+  // Record an entity merge. `before`/`after` are project slices
+  // ({ identifiers, connections, pinLinks, events }).
+  const recordMerge = useCallback(
+    (before, after) => {
+      if (!before || !after) return;
+      pushAction(buildMergeAction(before, after));
     },
     [pushAction],
   );
@@ -345,10 +386,12 @@ export function NodeHistoryProvider({ children }) {
       recordDelete,
       recordBatchDelete,
       recordMove,
+      recordBatchMoves,
       recordCreateEdge,
       recordDeleteEdge,
       recordBatchDeleteEdges,
       recordCreateNodeWithEdge,
+      recordMerge,
       undo,
       redo,
       canUndo: undoStack.length > 0,
@@ -362,10 +405,12 @@ export function NodeHistoryProvider({ children }) {
       recordDelete,
       recordBatchDelete,
       recordMove,
+      recordBatchMoves,
       recordCreateEdge,
       recordDeleteEdge,
       recordBatchDeleteEdges,
       recordCreateNodeWithEdge,
+      recordMerge,
       undo,
       redo,
       undoStack.length,

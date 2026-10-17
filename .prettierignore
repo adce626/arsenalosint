@@ -1,0 +1,6 @@
+.next
+node_modules
+coverage
+public/sw.js
+package-lock.json
+src/content/tools/awesome-osint-arsenal.json

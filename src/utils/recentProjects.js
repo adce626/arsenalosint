@@ -68,12 +68,10 @@ export function saveRecent(snapshot, { lastSavedAt } = {}) {
     snapshot,
     snapshotAt: new Date().toISOString(),
     lastSavedAt:
-      lastSavedAt !== undefined ? lastSavedAt : previous?.lastSavedAt ?? null,
+      lastSavedAt !== undefined ? lastSavedAt : (previous?.lastSavedAt ?? null),
   };
   const rest =
-    idx >= 0
-      ? [...recents.slice(0, idx), ...recents.slice(idx + 1)]
-      : recents;
+    idx >= 0 ? [...recents.slice(0, idx), ...recents.slice(idx + 1)] : recents;
   return writeRecents([entry, ...rest]);
 }
 
@@ -99,9 +97,9 @@ export function hasUnsavedChanges(entry) {
   // Compare against the project's own updatedAt (which only advances on real
   // edits) rather than snapshotAt (which advances on every auto-snapshot,
   // even when nothing changed — those would erroneously read as "unsaved").
-  const projectUpdated =
-    entry.snapshot?.updatedAt ?? entry.snapshotAt ?? null;
+  const projectUpdated = entry.snapshot?.updatedAt ?? entry.snapshotAt ?? null;
   if (!projectUpdated) return false;
-  return new Date(projectUpdated).getTime() >
-    new Date(entry.lastSavedAt).getTime();
+  return (
+    new Date(projectUpdated).getTime() > new Date(entry.lastSavedAt).getTime()
+  );
 }

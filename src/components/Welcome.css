@@ -6,8 +6,16 @@
   display: flex;
   flex-direction: column;
   background:
-    radial-gradient(1100px 600px at 20% -10%, var(--accent-soft), transparent 60%),
-    radial-gradient(900px 500px at 110% 110%, var(--accent-soft), transparent 60%),
+    radial-gradient(
+      1100px 600px at 20% -10%,
+      var(--accent-soft),
+      transparent 60%
+    ),
+    radial-gradient(
+      900px 500px at 110% 110%,
+      var(--accent-soft),
+      transparent 60%
+    ),
     var(--bg-0);
 }
 
@@ -86,7 +94,10 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  transition: border-color 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+  transition:
+    border-color 0.12s ease,
+    transform 0.12s ease,
+    box-shadow 0.12s ease;
 }
 
 .welcome-card:hover {

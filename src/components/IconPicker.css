@@ -57,7 +57,10 @@
   cursor: pointer;
   color: var(--text-1);
   font-size: 11px;
-  transition: background 0.12s ease, border-color 0.12s ease, transform 0.05s ease;
+  transition:
+    background 0.12s ease,
+    border-color 0.12s ease,
+    transform 0.05s ease;
   text-align: center;
   /* Keep tile from being elongated by long filenames — content is clipped
      and the text below will ellipsize. min-width:0 lets the tile shrink
@@ -145,7 +148,10 @@
   justify-content: center;
   cursor: pointer;
   opacity: 0;
-  transition: opacity 0.12s ease, background 0.12s ease, color 0.12s ease;
+  transition:
+    opacity 0.12s ease,
+    background 0.12s ease,
+    color 0.12s ease;
 }
 
 .icon-tile-wrap:hover .icon-tile-remove {
