@@ -75,7 +75,7 @@ End-to-end investigation workflows, step by step.
 
 ### 🗺️ Mapping tool
 
-<img src="./readme_images/Screenshot%202026-10-16%20234711.png" alt="Mapping tool" width="100%" />
+<img src="./readme_images/Screenshot%202026-10-16%20235630.png" alt="Mapping tool" width="100%" />
 
 Pins, switchable basemaps, and pin-to-identifier links.
 
