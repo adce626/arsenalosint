@@ -6,7 +6,7 @@
   "description": "A complete OSINT workspace: 700+ curated tools, field guides, and a local-first mapping tool.",
   "scripts": {
     "dev": "next dev -p 5173",
-    "build": "next build",
+    "build": "next build --webpack",
     "start": "next start -p 5173",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",

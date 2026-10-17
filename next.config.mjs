@@ -1,4 +1,10 @@
 /** @type {import('next').NextConfig} */
+//
+// NOTE: the production build runs with `next build --webpack` (see package.json).
+// Turbopack's next/font/google loader fails on some hosts — notably Vercel — with
+//   Module not found: Can't resolve '@vercel/turbopack-next/internal/font/google/font'
+//   next/font/google queries have exactly one entry
+// so we opt out of the default Turbopack build. Dev keeps using Turbopack.
 const isDev = process.env.NODE_ENV !== 'production';
 
 // Permissive-but-useful CSP tuned for the app's real dependencies:
